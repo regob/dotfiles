@@ -38,7 +38,8 @@
       "keys": [
         "Alt W"
       ],
-      "selector": ".jp-Activity"
+      "selector": ".jp-Activity",
+      "disabled": "true"
     },
     {
       "args": {},
@@ -54,7 +55,8 @@
       "keys": [
         "Accel Shift C"
       ],
-      "selector": "body"
+      "selector": "body",
+      "disabled": "true"
     },
     {
       "args": {},
@@ -180,15 +182,15 @@
       "args": {},
       "command": "docmanager:save",
       "keys": [
-        "Accel S"
+        "Accel Shift S"
       ],
-      "selector": "body"
+      "selector": ".jp-Notebook"
     },
     {
       "args": {},
       "command": "docmanager:save-as",
       "keys": [
-        "Accel Shift S"
+        "Accel Shift 9"
       ],
       "selector": "body"
     },
@@ -214,7 +216,8 @@
       "keys": [
         "Accel F"
       ],
-      "selector": ".jp-mod-searchable"
+      "selector": ".jp-mod-searchable",
+      "disabled": "true"
     },
     {
       "args": {},
@@ -800,7 +803,8 @@
       "keys": [
         "Accel S"
       ],
-      "selector": ".jp-SettingEditor"
+      "selector": ".jp-SettingEditor",
+      "disabled": "true"
     },
     {
       "args": {},
@@ -850,10 +854,6 @@
       ],
       "selector": ".jp-Notebook.jp-mod-editMode .jp-InputArea-editor:not(.jp-mod-has-primary-selection):not(.jp-mod-in-leading-whitespace):not(.jp-mod-completer-active)"
     },
-
-
-
-
     {
       "args": {},
       "command": "application:toggle-left-area",
@@ -872,15 +872,47 @@
       "selector": "body",
       "disabled": "true"
     },
-            {
-            "args": {},
-            "command": "debugger:next",
-            "keys": [
-                "F10"
-            ],
+    {
+      "args": {},
+      "command": "debugger:next",
+      "keys": [
+        "F10"
+      ],
       "selector": "body",
       "disabled": "true"
-        }
-
-  ]
+    },
+    {
+      "args": {},
+      "command": "notebook:clear-all-cell-outputs",
+      "keys": [
+        "Accel L"
+      ],
+      "selector": "body"
+    },
+    {
+      "args": {},
+      "command": "terminal:paste",
+      "keys": [
+        "Accel Shift V"
+      ],
+      "selector": ".body"
+    },
+    {
+      "args": {},
+      "command": "terminal:copy",
+      "keys": [
+        "Accel Shift C"
+      ],
+      "selector": ".body"
+    },
+    {
+      "args": {},
+      "command": "docmanager:save",
+      "keys": [
+        "Accel S"
+      ],
+      "selector": "body",
+      "disabled": "true"
+    }
+    ]
 }
