@@ -11,8 +11,10 @@ shopt -s globstar
 export HISTSIZE=-1
 export HISTFILESIZE=-1
 
+########################################
 ## PS1 prompt
-# TODO: rewrite colors with tput
+########################################
+
 function ps1_date() {
     echo -n "$(date +"%H:%M")"
 }
@@ -20,7 +22,7 @@ function ps1_date() {
 # unused in favor of pretty-git-prompt
 function ps1_git() {
     BRANCH=$(git branch 2>/dev/null | cut -c3-10 | tr -d "\n")
-    echo -n "$BRANCH"
+    echo -ne "$BRANCH"
 }
 
 # modded from https://stackoverflow.com/questions/10406926/how-do-i-change-the-default-virtualenv-prompt
@@ -35,6 +37,7 @@ function ps1_virtualenv_info(){
 
     # also put changeps1: False to ~/.condarc to remove ps1 
     conda_env=$(basename "$CONDA_PREFIX")
+    # conda_env=$(conda env list | grep "\*" | tr -s " " | cut -f1 -d " ")
     if [[ -n "$venv" ]] && [[ -n "$conda_env" ]]; then
         env_str="${conda_env}/${venv}"
     elif [[ -z "$venv" ]] && [[ -z "$conda_env" ]]; then
@@ -58,10 +61,10 @@ BLUE='\x01\e[38;5;39m\x02'
 MAGENTA='\x01\e[0;35m\x02'
 CYAN='\x01\e[38;5;87m\x02'
 GRAY='\x01\e[0;37m\x02'
-BR_GREEN="\x01\e[38;5;46m\x02"
+BR_GREEN="\x01\e[38;5;76m\x02"
 
 # inline sequences for coloring
-INL_RED="\[\e[31m\]"
+INL_RED="\[\e[38;5;124m\]"
 INL_BLUE='\[\e[38;5;39m\]'
 INL_GRAY="\[\e[37m\]"
 INL_GREEN="\[\e[32m\]"
@@ -70,22 +73,27 @@ INL_BR_GREEN="\[\e[38;5;76m\]"
 INL_RESET="\[$(tput sgr0)\]"
 INL_VIOLET="\[\e[38;5;134m\]"
 INL_PURPLE="\[\e[38;5;135m\]"
+INL_LIGHT_BLUE="\[\e[38;5;159m\]" # 159
 INL_MAGENTA="\[\e[38;5;201m\]"
+INL_GOLD="\[\e[38;5;185m\]"
 
 function ps1_summary() {
     # result of previous command with green (successful) or red (failure, nonzero exit)
     prev_cmd=$([[ "$?" -eq 0 ]] && echo -ne "${BR_GREEN}+" || echo -ne "${RED}-")
     dir_stack_len=$(echo $(dirs | wc -w))
 
-    echo -ne "${BLUE}${dir_stack_len}${prev_cmd}${RESET}"
+    echo -ne "${BR_GREEN}${dir_stack_len}${prev_cmd}${RESET}"
 }
 
 # prevent python venv messing up the prompt
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
-S="${INL_RESET}.${INL_RESET}"
-export PS1="${INL_RED}["'$(ps1_summary)'"${S}${INL_RESET}\u@\h${INL_RESET}${S}${INL_BR_GREEN}\W${INL_RESET}${S}${INL_GRAY}"'$(ps1_virtualenv_info)'"${INL_RESET}${S}"'$(ps1_git)'"${INL_RED}]>${INL_RESET} "
+S=" "
+export PS1="${INL_VIOLET}["'$(ps1_summary)'"${S}${INL_GOLD}\u@\h${INL_RESET}${S}${INL_VIOLET}\W${INL_RESET}${S}${INL_GRAY}"'$(ps1_virtualenv_info)'"${INL_RESET}${S}"'$(ps1_git)'"${INL_VIOLET}]>${INL_RESET} "
 
+########################################
+## Utility functions
+########################################
 
 function meta() {
 
