@@ -3,6 +3,14 @@
 export PAGER=less
 export EDITOR="emacs -nw -q"
 
+# extended shell globbing
+shopt -s extglob
+shopt -s globstar
+
+# history settings
+export HISTSIZE=-1
+export HISTFILESIZE=-1
+
 ## PS1 prompt
 # TODO: rewrite colors with tput
 function ps1_date() {
@@ -112,4 +120,9 @@ function meta() {
     echo "Out sample:"
     echo "--------------------"
     head -n 10 "$1_out.txt"
+}
+
+# pretty csv from: https://www.stefaanlippens.net/pretty-csv.html
+function pretty_csv {
+    perl -pe 's/((?<=,)|(?<=^)),/ ,/g;' "$@" | column -t -s, | less  -F -S -X -K
 }
