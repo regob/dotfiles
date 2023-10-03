@@ -58,7 +58,7 @@ function virtualenv_info(){
 # prevent python venv messing up the prompt
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
-export PS1="[\$(ps1_date) \u] [$BR_GREEN\$(virtualenv_info)$RESET] $GREEN\W$RESET $RED\$(pretty-git-prompt)$RESET>$RESET "
+# export PS1="[\$(ps1_date) \u] [$BR_GREEN\$(virtualenv_info)$RESET] $GREEN\W$RESET $RED\$(pretty-git-prompt)$RESET>$RESET "
 # export PS1="\$(ps1_date)/$GREEN\W$RESET/$RED\$(pretty-git-prompt)$RESET/\$$RESET "
 
 
@@ -103,6 +103,8 @@ function meta() {
 }
 
 # pretty csv from: https://www.stefaanlippens.net/pretty-csv.html
+
 function pretty_csv {
+    # cat "$@" | sed 's/,/ ,/g' | column -t -s, | less -S
     perl -pe 's/((?<=,)|(?<=^)),/ ,/g;' "$@" | column -t -s, | less  -F -S -X -K
 }
