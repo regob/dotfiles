@@ -1,5 +1,8 @@
 ## .bashrc file
 
+export PAGER=less
+export EDITOR="emacs -nw -q"
+
 # extended shell globbing
 shopt -s extglob
 shopt -s globstar
@@ -8,38 +11,22 @@ shopt -s globstar
 export HISTSIZE=-1
 export HISTFILESIZE=-1
 
-
-
+########################################
 ## PS1 prompt
-
-# TODO: rewrite colors with tput
-RED="\[\e[31m\]"
-GRAY="\[\e[37m\]"
-GREEN="\[\e[32m\]"
-BR_GREEN="\[\e[92m\]"
-#WHITE="\[\e[0;31m\]"
-RESET="\[$(tput sgr0)\]"
+########################################
 
 function ps1_date() {
     echo -n "$(date +"%H:%M")"
 }
 
+# unused in favor of pretty-git-prompt
 function ps1_git() {
     BRANCH=$(git branch 2>/dev/null | cut -c3-10 | tr -d "\n")
-    echo -n "$BRANCH"
-    # case $BRANCH in
-    #     master | main)
-    #         echo -n "$RED$BRANCH$RESET"
-    #         ;;
-    #     *)
-    #         echo -n "$GREEN$BRANCH$RESET"
-    #         ;;
-    # esac
+    echo -ne "$BRANCH"
 }
 
 # modded from https://stackoverflow.com/questions/10406926/how-do-i-change-the-default-virtualenv-prompt
-function virtualenv_info(){
-    ## $(basename "$CONDA_PREFIX")
+function ps1_virtualenv_info(){
     if [[ -n "$VIRTUAL_ENV" ]]; then
         # Strip out the path and just leave the env name
         venv="${VIRTUAL_ENV##*/}"
@@ -48,29 +35,66 @@ function virtualenv_info(){
         venv=''
     fi
 
-    [[ -n "$venv" ]] && echo "(venv:$venv) "
+    # also put changeps1: False to ~/.condarc to remove ps1 
+    conda_env=$(basename "$CONDA_PREFIX")
+    # conda_env=$(conda env list | grep "\*" | tr -s " " | cut -f1 -d " ")
+    if [[ -n "$venv" ]] && [[ -n "$conda_env" ]]; then
+        env_str="${conda_env}/${venv}"
+    elif [[ -z "$venv" ]] && [[ -z "$conda_env" ]]; then
+        env_str=""
+    else
+        # one of them is null: just concat them to get the non-null one (or empty)
+        env_str="${conda_env}${venv}"
+    fi
+
+    echo -n "${env_str}"
 }
 
-# function dirsummary() {
-    
-# }
+
+# \x01 and \x02 enclose zero length characters for proper readline support
+# https://stackoverflow.com/questions/32226139/escaping-zero-length-characters-in-bash
+RESET='\x01\e[0;0m\x02'
+RED='\x01\e[0;31m\x02'
+GREEN='\x01\e[0;32m\x02'
+YELLOW='\x01\e[0;33m\x02'
+BLUE='\x01\e[38;5;39m\x02'
+MAGENTA='\x01\e[0;35m\x02'
+CYAN='\x01\e[38;5;87m\x02'
+GRAY='\x01\e[0;37m\x02'
+BR_GREEN="\x01\e[38;5;76m\x02"
+
+# inline sequences for coloring
+INL_RED="\[\e[38;5;124m\]"
+INL_BLUE='\[\e[38;5;39m\]'
+INL_GRAY="\[\e[37m\]"
+INL_GREEN="\[\e[32m\]"
+INL_BR_GREEN="\[\e[38;5;76m\]"
+# INL_WHITE="\[\e[0;31m\]"
+INL_RESET="\[$(tput sgr0)\]"
+INL_VIOLET="\[\e[38;5;134m\]"
+INL_PURPLE="\[\e[38;5;135m\]"
+INL_LIGHT_BLUE="\[\e[38;5;159m\]" # 159
+INL_MAGENTA="\[\e[38;5;201m\]"
+INL_GOLD="\[\e[38;5;185m\]"
+
+function ps1_summary() {
+    # result of previous command with green (successful) or red (failure, nonzero exit)
+    prev_cmd=$([[ "$?" -eq 0 ]] && echo -ne "${BR_GREEN}+" || echo -ne "${RED}-")
+    dir_stack_len=$(echo $(dirs | wc -w))
+
+    echo -ne "${BR_GREEN}${dir_stack_len}${prev_cmd}${RESET}"
+}
 
 # prevent python venv messing up the prompt
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
-# export PS1="[\$(ps1_date) \u] [$BR_GREEN\$(virtualenv_info)$RESET] $GREEN\W$RESET $RED\$(pretty-git-prompt)$RESET>$RESET "
-# export PS1="\$(ps1_date)/$GREEN\W$RESET/$RED\$(pretty-git-prompt)$RESET/\$$RESET "
+S=" "
+export PS1="${INL_VIOLET}["'$(ps1_summary)'"${S}${INL_GOLD}\u@\h${INL_RESET}${S}${INL_VIOLET}\W${INL_RESET}${S}${INL_GRAY}"'$(ps1_virtualenv_info)'"${INL_RESET}${S}"'$(ps1_git)'"${INL_VIOLET}]>${INL_RESET} "
 
 
-# tw_prompt_color () {
-# if [[ ! -z $TASKRC ]]; then
-#   echo -n '\[\e[92m\] asdf  \[\033[34m\]'
-# else
-#   echo -e '\033[32m'
-# fi
-# }
-# PS1='$(tw_prompt_color)iMac5K${RESET}'
-
+########################################
+## Utility functions
+########################################
 
 function meta() {
 
@@ -80,6 +104,11 @@ function meta() {
         PY="$3"
     fi
 
+    if [ -z "$1" ] || [ -z "$2" ]; then
+        echo "usage: meta problem_code input_file"
+        return 1
+    fi
+    
     cat "$2" | "$PY" "$1.py" > "$1_out.txt"
     # /usr/bin/time -f "%E"
 
