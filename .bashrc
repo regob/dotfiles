@@ -11,6 +11,9 @@ shopt -s globstar
 export HISTSIZE=-1
 export HISTFILESIZE=-1
 
+# CDPATH and PATH in local config
+# export CDPATH="$HOME:.."
+
 ########################################
 ## PS1 prompt
 ########################################
@@ -21,7 +24,7 @@ function ps1_date() {
 
 # unused in favor of pretty-git-prompt
 function ps1_git() {
-    BRANCH=$(git branch 2>/dev/null | cut -c3-10 | tr -d "\n")
+    BRANCH=$(git branch 2>/dev/null | grep '\*' | cut -c3-16 | tr -d "\n")
     echo -ne "$BRANCH"
 }
 
@@ -80,7 +83,8 @@ INL_GOLD="\[\e[38;5;185m\]"
 function ps1_summary() {
     # result of previous command with green (successful) or red (failure, nonzero exit)
     prev_cmd=$([[ "$?" -eq 0 ]] && echo -ne "${BR_GREEN}+" || echo -ne "${RED}-")
-    dir_stack_len=$(echo $(dirs | wc -w))
+    # number of directories in directory stack (fixed for dirs with spaces)
+    dir_stack_len=$(echo $(dirs -p | wc -l))
 
     echo -ne "${BR_GREEN}${dir_stack_len}${prev_cmd}${RESET}"
 }
@@ -131,9 +135,24 @@ function meta() {
     head -n 10 "$1_out.txt"
 }
 
-# pretty csv from: https://www.stefaanlippens.net/pretty-csv.html
-
+# pretty csv adapted from: https://www.stefaanlippens.net/pretty-csv.html
 function pretty_csv {
     # cat "$@" | sed 's/,/ ,/g' | column -t -s, | less -S
-    perl -pe 's/((?<=,)|(?<=^)),/ ,/g;' "$@" | column -t -s, | less  -F -S -X -K
+    perl -pe 's/((?<=,)|(?<=^)),/ ,/g;' "$@" \
+        | awk -F\" '{for (i=1; i<=NF; i+=2) gsub(/,/,";",$i)} 1' OFS='"' \
+	| column -t -s';' \
+        | less  -F -S -X -K
 }
+
+# test with:
+# mkdir -p "QQ WW"/"This is spaces"/"Windows bullshit"/"good_folder"; mkdir -p "QQ WW"/"good"; mkdir -p "QQ WW"/"a b c d e"; mkdir -p "goodfolder"/"bad folder"; mkdir -p "bad fol der"/"good_folder"/"h or ri ble folder"
+function fix_dirnames {
+    find . -depth -name '* *' \
+	| while IFS= read -r f ; do mv -i "$f" "$(dirname "$f")/$(basename "$f"|tr ' ' _)" ; done
+}
+
+# find . -type d | awk -F ';' '/ / {print $1; gsub(" ", ""); print $1}' | sed -E 's/(.*)/"\1"/' | awk 'ORS=NR%2?FS:RS' | awk '{print gsub("/","/"), $0}' | sort -nr | cut -d '"' -f2- | sed 's/" "/\n/' | tr -d '"' | xargs -d "\n" -n 2 echo
+
+# function rename_spaces {
+#     echo "$@" | awk -F '\x00' '/ / {print $1; gsub(" ", ""); print $1}' | xargs -d "\n" -n 2 mv -i
+# }
