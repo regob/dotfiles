@@ -1,4 +1,6 @@
 [pycodestyle]
-ignore = E226,E302,E71
+# Error codes https://github.com/hhatto/autopep8
+# E226, E302, E71
+ignore = E302
 max-line-length = 160
 statistics = True
