@@ -10,12 +10,17 @@ $env:Path = 'C:\msys64\usr\bin;C:\msys64\bin;' + $env:Path
 
 #region conda initialize
 # !! Contents within this block are managed by 'conda init' !!
-(& "C:\Users\ebogrer\Miniconda3\Scripts\conda.exe" "shell.powershell" "hook") | Out-String | Invoke-Expression
+If (Test-Path "C:\Users\ebogrer\AppData\Local\miniforge3\Scripts\conda.exe") {
+    (& "C:\Users\ebogrer\AppData\Local\miniforge3\Scripts\conda.exe" "shell.powershell" "hook") | Out-String | ?{$_} | Invoke-Expression
+}
 #endregion
 
 
 # import local modules
 #Import-Module document_conversion
+
+# aliases
+New-Alias ll ls
 
 # Use PsReadLine and switch to emacs mode
 Import-Module PSReadLine
@@ -101,5 +106,5 @@ Set-PSReadLineKeyHandler -Key Ctrl+Q -Function TabCompletePrevious
 # Set-PSReadLineKeyHandler -Chord 'Ctrl+d,Ctrl+c' -Function CaptureScreen
 
 # cannot hear >15khz, set it high enough to annoy other people
-# Set-PSReadLineOption -DingTone 14000
+# Set-PSReadLineOption -DingTone 13000
 # Set-PSReadLineOption -DingDuration 250
