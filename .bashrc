@@ -9,6 +9,20 @@ shopt -s globstar
 
 
 ########################################
+## Aliases
+########################################
+alias gadd="git add"
+alias gull="git pull origin"
+alias gush="git push origin"
+alias gcom="git commit --verbose"
+alias gdif="git diff"
+alias glog="git log"
+alias gmer="git merge"
+alias gstu="git status"
+alias gsta="git stash"
+alias gwha="git whatchanged"
+
+########################################
 ## History config
 ########################################
 
