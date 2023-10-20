@@ -12,6 +12,8 @@ function Convert-Documents-Doc {
     Get-ChildItem -Path $DocumentPath -Filter *.doc? | ForEach-Object {
 
         $document = $word_app.Documents.Open($_.FullName)
+        $document.PrintRevisions = False
+        $document.ShowRevisions = False
 
         $pdf_filename = "$result_dir/$($_.BaseName).pdf"
         Write-Output "Saving $pdf_filename"
@@ -73,4 +75,5 @@ function Convert-Documents-Ppt {
 
 # }
 
-Export-ModuleMember -Function Convert-Documents-Doc, Convert-Documents-Ppt
+Export-ModuleMember -Function Convert-Documents-Doc
+Export-ModuleMember -Function Convert-Documents-Ppt
