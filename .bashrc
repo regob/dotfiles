@@ -14,8 +14,8 @@ shopt -s globstar
 alias gadd="git add"
 alias gull="git pull origin"
 alias gush="git push origin"
+alias giff="git diff"
 alias gcom="git commit --verbose"
-alias gdif="git diff"
 alias glog="git log"
 alias gmer="git merge"
 alias gstu="git status"
@@ -135,22 +135,62 @@ export PS1="${INL_VIOLET}["'$(ps1_summary)'"${S}${INL_GOLD}\u@\h${INL_RESET}${S}
 
 function meta() {
 
-    if [ -z "$3" ]; then
-        PY="python3"
-    else
-        PY="$3"
-    fi
+    USAGE="Usage: meta PROBLEM_CODE INPUT_FILE [-p CMD | -s NUMBER]
 
-    if [ -z "$1" ] || [ -z "$2" ]; then
-        echo "usage: meta problem_code input_file [python binary]"
+Other options:
+  -p, --python CMD                use a given python interpreter
+  -s, --sample NUMBER             show this many rows of the input and output
+                                    if -1 provided, print the whole files
+"
+    
+    POS_ARGS=()
+    PY="pypy3.10"
+    N_SAMPLE="10"
+    
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -p|--python)
+                PY="$2"
+                shift
+                shift
+                ;;
+            -s|--sample)
+                N_SAMPLE="$2"
+                if [[ "${N_SAMPLE}" -lt 0 ]]; then
+                   N_SAMPLE=100000000
+                fi
+                shift
+                shift
+                ;;
+            -h|--usage|--help)
+                echo $USAGE
+                shift
+                ;;
+            -*|--*)
+                echo "Unknown option $1"
+                exit 1
+                ;;
+            *)
+                POS_ARGS+=("$1")
+                shift
+                ;;
+        esac
+    done
+    
+    set -- "${POS_ARGS[@]}" # restore positional parameters
+
+    # not exactly 2 position arguments provided
+    if [ -z "$1" ] || [ -z "$2" ] || [ -n "$3" ]; then 
+        echo "Provide exactly 2 positional arguments!"
+        echo "$USAGE"
         return 1
     fi
-    
+
     cat "$2" | "$PY" "$1.py" > "$1_out.txt"
     # /usr/bin/time -f "%E"
 
     if [ "$?" -ne 0 ]; then
-        echo "Error when running the program."
+        echo "Error when running the program: Terminating."
         return 1
     fi
 
@@ -160,12 +200,25 @@ function meta() {
     echo "Output lines: $OUT_LINES"
     echo "In sample:"
     echo "--------------------"
-    head -n 10 "$2"
+    head -n ${N_SAMPLE} "$2"
 
     printf "\n"
     echo "Out sample:"
     echo "--------------------"
-    head -n 10 "$1_out.txt"
+    head -n ${N_SAMPLE} "$1_out.txt"
+}
+
+function meta_init {
+    if [[ $# -le 1 ]]; then
+        echo "Usage: meta_init template_file CODE..."
+    fi
+    TEMPLATE="$1"
+    shift
+
+    for code in "$@"; do
+        cp $TEMPLATE "${code}.py"
+        touch "${code}_in.txt" "${code}_test.txt"
+    done
 }
 
 # pretty csv adapted from: https://www.stefaanlippens.net/pretty-csv.html
