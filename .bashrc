@@ -21,6 +21,10 @@ alias gmer="git merge"
 alias gstu="git status"
 alias gsta="git stash"
 alias gwha="git whatchanged"
+alias gche="git checkout"
+alias gbra="git branch"
+
+alias cac="conda activate"
 
 ########################################
 ## History config
