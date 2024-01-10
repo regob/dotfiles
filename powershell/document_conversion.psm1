@@ -51,29 +51,5 @@ function Convert-Documents-Ppt {
     $PowerPoint.Quit()
 }
 
-# function Convert-Documents3 {
-
-#     param (
-#         $DocumentPath
-#     )
-
-#     Get-ChildItem $DocumentPath -File -Filter *pptx |
-#     ForEach-Object -Begin {
-#         $null = Add-Type -AssemblyName Microsoft.Office.Interop.PowerPoint
-#         $SaveOption = [Microsoft.Office.Interop.PowerPoint.PpSaveAsFileType]::ppSaveAsPDF
-#         $PowerPoint = New-Object -ComObject “PowerPoint.Application”
-#     } -Process {
-#         $Presentation = $PowerPoint.Presentations.Open($_.FullName)
-#         # $PdfNewName  = $PSScriptRoot + “\\pdf\\” + $_.Name -replace ‘\.pptx$’,’.pdf’
-#         $PdfNewname = "$($_.DirectoryName)\$($_.BaseName).pdf"
-#         $Presentation.SaveAs($PdfNewName, $SaveOption)
-#         $Presentation.Close()
-#     } -End {
-#         $PowerPoint.Quit()
-#         Stop-Process -Name POWERPNT -Force
-#     }
-
-# }
-
 Export-ModuleMember -Function Convert-Documents-Doc
 Export-ModuleMember -Function Convert-Documents-Ppt
