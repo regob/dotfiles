@@ -228,9 +228,13 @@ function meta_init {
 # pretty csv adapted from: https://www.stefaanlippens.net/pretty-csv.html
 function pretty_csv {
     # cat "$@" | sed 's/,/ ,/g' | column -t -s, | less -S
-    perl -pe 's/((?<=,)|(?<=^)),/ ,/g;' "$@" \
-        | awk -F\" '{for (i=1; i<=NF; i+=2) gsub(/,/,";",$i)} 1' OFS='"' \
-	| column -t -s';' \
+    s="$IFS"
+    if [ "$s" = "" ]; then
+        s=","
+    fi
+    perl -pe "s/((?<=$s)|(?<=^))$s/ $s/g;" "$@" \
+        | awk -F\" "{for (i=1; i<=NF; i+=2) gsub(/$s/,\"^\",\$i)} 1" OFS='"' \
+	| column -t -s'^' \
         | less  -F -S -X -K
 }
 
@@ -246,3 +250,11 @@ function fix_dirnames {
 # function rename_spaces {
 #     echo "$@" | awk -F '\x00' '/ / {print $1; gsub(" ", ""); print $1}' | xargs -d "\n" -n 2 mv -i
 # }
+
+
+function winpath_to_wsl {
+    s="$1"
+    echo "$s" | sed 's@\\@/@g' \
+                    | (head -c 1 | tr A-Z a-z; sed 1q) \
+                    | sed -E 's@^([a-z]):@/mnt/\1@'
+}
