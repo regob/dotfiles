@@ -13,4 +13,11 @@ function Get-BrParameterCount {
     }
 }
 
-Export-ModuleMember -Function Get-BrParameterCount
+function Get-WslPath {
+    $path = Get-Location
+    $wsl_path = $path -replace "\\","/"
+    $wsl_path = $wsl_path -replace "C:/","/mnt/c/"
+    return $wsl_path
+}
+
+Export-ModuleMember -Function Get-BrParameterCount, Get-WslPath
