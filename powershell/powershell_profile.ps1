@@ -6,6 +6,11 @@
 # add MSYS binaries to the front of the path
 $env:Path = 'C:\msys64\usr\bin;C:\msys64\bin;' + $env:Path
 #$env:PSModulePath = $env:PSModulePath + ';' + $LOCAL_PS_MODULES
+
+$Env:QUARTO_DENO_EXTRA_OPTIONS = "--v8-flags=--stack-size=1000000"
+
+
+
 # import local modules
 #Import-Module document_conversion
 # aliases
