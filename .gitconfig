@@ -1,6 +1,0 @@
-[user]
-	name = Rego Borsodi
-	email = regobpx@gmail.com
-	signingkey = 695AE2509FFBB464
-[commit]
-	gpgsign = true

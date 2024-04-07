@@ -74,8 +74,17 @@ function check_command_exists {
 
 check_command_exists python
 check_command_exists python3
+check_command_exists rg
 if check_command_exists direnv; then
     eval "$(direnv hook bash)"
+fi
+
+if check_command_exists kubectl; then
+    alias k="kubectl"
+    
+    function kns {
+        kubectl config set-context --current --namespace="$1"
+    }
 fi
 
 ########################################
@@ -87,16 +96,18 @@ export HISTCONTROL=ignorespace   # leading space hides commands from history
 export HISTSIZE=-1               # unlimited history size
 export HISTFILESIZE=-1           # unlimited history file size
 
-function hstrnotiocsti {
-    { READLINE_LINE="$( { </dev/tty hstr ${READLINE_LINE}; } 2>&1 1>&3 3>&- )"; } 3>&1;
-    READLINE_POINT=${#READLINE_LINE}
-}
 
 if check_command_exists hstr; then
     alias hh=hstr
     export HSTR_CONFIG=hicolor       # get more colors
     # ensure synchronization between bash memory and history file
     export PROMPT_COMMAND="history -a; history -n; ${PROMPT_COMMAND}"
+
+    function hstrnotiocsti {
+        { READLINE_LINE="$( { </dev/tty hstr ${READLINE_LINE}; } 2>&1 1>&3 3>&- )"; } 3>&1;
+        READLINE_POINT=${#READLINE_LINE}
+    }
+
 
     # if this is interactive shell, then bind hstr to Ctrl-r (for Vi mode check doc)
     if [[ $- =~ .*i.* ]]; then bind -x '"\C-r": "hstrnotiocsti"'; fi
