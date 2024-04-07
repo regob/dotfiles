@@ -26,71 +26,6 @@ alias gbra="git branch"
 
 alias cac="conda activate"
 
-########################################
-## History config
-########################################
-
-alias hh=hstr                    # hh to be alias for hstr
-shopt -s histappend              # append new history items to .bash_history
-export HSTR_CONFIG=hicolor       # get more colors
-export HISTCONTROL=ignorespace   # leading space hides commands from history
-export HISTSIZE=-1               # unlimited history size
-export HISTFILESIZE=-1           # unlimited history file size
-
-# ensure synchronization between bash memory and history file
-export PROMPT_COMMAND="history -a; history -n; ${PROMPT_COMMAND}"
-function hstrnotiocsti {
-    { READLINE_LINE="$( { </dev/tty hstr ${READLINE_LINE}; } 2>&1 1>&3 3>&- )"; } 3>&1;
-    READLINE_POINT=${#READLINE_LINE}
-}
-# if this is interactive shell, then bind hstr to Ctrl-r (for Vi mode check doc)
-if [[ $- =~ .*i.* ]]; then bind -x '"\C-r": "hstrnotiocsti"'; fi
-export HSTR_TIOCSTI=n
-
-
-# CDPATH and PATH in local config
-# export CDPATH="$HOME:.."
-
-########################################
-## PS1 prompt
-########################################
-
-function ps1_date() {
-    echo -n "$(date +"%H:%M")"
-}
-
-# unused in favor of pretty-git-prompt
-function ps1_git() {
-    BRANCH=$(git branch 2>/dev/null | grep '\*' | cut -c3-16 | tr -d "\n")
-    echo -ne "$BRANCH"
-}
-
-# modded from https://stackoverflow.com/questions/10406926/how-do-i-change-the-default-virtualenv-prompt
-function ps1_virtualenv_info(){
-    if [[ -n "$VIRTUAL_ENV" ]]; then
-        # Strip out the path and just leave the env name
-        venv="${VIRTUAL_ENV##*/}"
-    else
-        # In case you don't have one activated
-        venv=''
-    fi
-
-    # also put changeps1: False to ~/.condarc to remove ps1 
-    conda_env=$(basename "$CONDA_PREFIX")
-    # conda_env=$(conda env list | grep "\*" | tr -s " " | cut -f1 -d " ")
-    if [[ -n "$venv" ]] && [[ -n "$conda_env" ]]; then
-        env_str="${conda_env}/${venv}"
-    elif [[ -z "$venv" ]] && [[ -z "$conda_env" ]]; then
-        env_str=""
-    else
-        # one of them is null: just concat them to get the non-null one (or empty)
-        env_str="${conda_env}${venv}"
-    fi
-
-    echo -n "${env_str}"
-}
-
-
 # \x01 and \x02 enclose zero length characters for proper readline support
 # https://stackoverflow.com/questions/32226139/escaping-zero-length-characters-in-bash
 RESET='\x01\e[0;0m\x02'
@@ -117,7 +52,97 @@ INL_LIGHT_BLUE="\[\e[38;5;159m\]" # 159
 INL_MAGENTA="\[\e[38;5;201m\]"
 INL_GOLD="\[\e[38;5;185m\]"
 
-function ps1_summary() {
+########################################
+## Set up tools
+########################################
+
+
+function check_command_exists {
+    # $1: command_name
+    which "$1" >/dev/null 2>&1
+    _cmd_found="$?"
+    if [ "$_cmd_found" -eq 0 ]; then
+        _msg="${BR_GREEN}$1${RESET} found at $(which $1)."
+    else
+        _msg="${RED}$1${RESET} not found."
+    fi
+    
+    echo -e "$_msg"
+    return "$_cmd_found"
+}
+
+
+check_command_exists python
+check_command_exists python3
+if check_command_exists direnv; then
+    eval "$(direnv hook bash)"
+fi
+
+########################################
+## History config
+########################################
+
+shopt -s histappend              # append new history items to .bash_history
+export HISTCONTROL=ignorespace   # leading space hides commands from history
+export HISTSIZE=-1               # unlimited history size
+export HISTFILESIZE=-1           # unlimited history file size
+
+function hstrnotiocsti {
+    { READLINE_LINE="$( { </dev/tty hstr ${READLINE_LINE}; } 2>&1 1>&3 3>&- )"; } 3>&1;
+    READLINE_POINT=${#READLINE_LINE}
+}
+
+if check_command_exists hstr; then
+    alias hh=hstr
+    export HSTR_CONFIG=hicolor       # get more colors
+    # ensure synchronization between bash memory and history file
+    export PROMPT_COMMAND="history -a; history -n; ${PROMPT_COMMAND}"
+
+    # if this is interactive shell, then bind hstr to Ctrl-r (for Vi mode check doc)
+    if [[ $- =~ .*i.* ]]; then bind -x '"\C-r": "hstrnotiocsti"'; fi
+    export HSTR_TIOCSTI=n
+fi
+
+########################################
+## PS1 prompt
+########################################
+
+function ps1_date {
+    echo -n "$(date +"%H:%M")"
+}
+
+# unused in favor of pretty-git-prompt
+function ps1_git {
+    BRANCH=$(git branch 2>/dev/null | grep '\*' | cut -c3-16 | tr -d "\n")
+    echo -ne "$BRANCH"
+}
+
+# modded from https://stackoverflow.com/questions/10406926/how-do-i-change-the-default-virtualenv-prompt
+function ps1_virtualenv_info {
+    if [[ -n "$VIRTUAL_ENV" ]]; then
+        # Strip out the path and just leave the env name
+        venv="${VIRTUAL_ENV##*/}"
+    else
+        # In case you don't have one activated
+        venv=''
+    fi
+
+    # also put changeps1: False to ~/.condarc to remove ps1 
+    conda_env=$(basename "$CONDA_PREFIX")
+    # conda_env=$(conda env list | grep "\*" | tr -s " " | cut -f1 -d " ")
+    if [[ -n "$venv" ]] && [[ -n "$conda_env" ]]; then
+        env_str="${conda_env}/${venv}"
+    elif [[ -z "$venv" ]] && [[ -z "$conda_env" ]]; then
+        env_str=""
+    else
+        # one of them is null: just concat them to get the non-null one (or empty)
+        env_str="${conda_env}${venv}"
+    fi
+
+    echo -n "${env_str}"
+}
+
+function ps1_summary {
     # result of previous command with green (successful) or red (failure, nonzero exit)
     prev_cmd=$([[ "$?" -eq 0 ]] && echo -ne "${BR_GREEN}+" || echo -ne "${RED}-")
     # number of directories in directory stack (fixed for dirs with spaces)
@@ -130,14 +155,14 @@ function ps1_summary() {
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 S=" "
-export PS1="${INL_VIOLET}["'$(ps1_summary)'"${S}${INL_GOLD}\u@\h${INL_RESET}${S}${INL_VIOLET}\W${INL_RESET}${S}${INL_GRAY}"'$(ps1_virtualenv_info)'"${INL_RESET}${S}"'$(ps1_git)'"${INL_VIOLET}]>${INL_RESET} "
+export PS1="${INL_VIOLET}["'$(ps1_summary)'"${S}${INL_GOLD}\u@\h${INL_RESET}${S}${INL_VIOLET}\W${INL_RESET}${S}${INL_GRAY}"'$(ps1_virtualenv_info)'"${INL_RESET}${S}"'$(ps1_git)'"${INL_VIOLET}]>${INL_RESET} "    
 
 
 ########################################
-## Utility functions
+## Misc Utility functions
 ########################################
 
-function meta() {
+function meta {
 
     USAGE="Usage: meta PROBLEM_CODE INPUT_FILE [-p CMD | -s NUMBER]
 
