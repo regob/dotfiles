@@ -6,7 +6,8 @@ export EDITOR="emacs -nw -q"
 # extended shell globbing
 shopt -s extglob
 shopt -s globstar
-
+# case insensitive globbing
+shopt -s nocaseglob
 
 ########################################
 ## Aliases
@@ -183,94 +184,6 @@ export PS1="${INL_VIOLET}["'$(ps1_summary)'"${S}${INL_GOLD}\u@\h${INL_RESET}${S}
 ########################################
 ## Misc Utility functions
 ########################################
-
-function meta {
-
-    USAGE="Usage: meta PROBLEM_CODE INPUT_FILE [-p CMD | -s NUMBER]
-
-Other options:
-  -p, --python CMD                use a given python interpreter
-  -s, --sample NUMBER             show this many rows of the input and output
-                                    if -1 provided, print the whole files
-"
-    
-    POS_ARGS=()
-    PY="pypy3.10"
-    N_SAMPLE="10"
-    
-    while [[ $# -gt 0 ]]; do
-        case "$1" in
-            -p|--python)
-                PY="$2"
-                shift
-                shift
-                ;;
-            -s|--sample)
-                N_SAMPLE="$2"
-                if [[ "${N_SAMPLE}" -lt 0 ]]; then
-                   N_SAMPLE=100000000
-                fi
-                shift
-                shift
-                ;;
-            -h|--usage|--help)
-                echo $USAGE
-                shift
-                ;;
-            -*|--*)
-                echo "Unknown option $1"
-                exit 1
-                ;;
-            *)
-                POS_ARGS+=("$1")
-                shift
-                ;;
-        esac
-    done
-    
-    set -- "${POS_ARGS[@]}" # restore positional parameters
-
-    # not exactly 2 position arguments provided
-    if [ -z "$1" ] || [ -z "$2" ] || [ -n "$3" ]; then 
-        echo "Provide exactly 2 positional arguments!"
-        echo "$USAGE"
-        return 1
-    fi
-
-    cat "$2" | "$PY" "$1.py" > "$1_out.txt"
-    # /usr/bin/time -f "%E"
-
-    if [ "$?" -ne 0 ]; then
-        echo "Error when running the program: Terminating."
-        return 1
-    fi
-
-    IN_LINES=$(wc -l "$2")
-    OUT_LINES=$(wc -l "$1_out.txt")
-    echo "Input lines: $IN_LINES"
-    echo "Output lines: $OUT_LINES"
-    echo "In sample:"
-    echo "--------------------"
-    head -n ${N_SAMPLE} "$2"
-
-    printf "\n"
-    echo "Out sample:"
-    echo "--------------------"
-    head -n ${N_SAMPLE} "$1_out.txt"
-}
-
-function meta_init {
-    if [[ $# -le 1 ]]; then
-        echo "Usage: meta_init template_file CODE..."
-    fi
-    TEMPLATE="$1"
-    shift
-
-    for code in "$@"; do
-        cp $TEMPLATE "${code}.py"
-        touch "${code}_in.txt" "${code}_test.txt"
-    done
-}
 
 # pretty csv adapted from: https://www.stefaanlippens.net/pretty-csv.html
 function pretty_csv {
