@@ -37,6 +37,7 @@ MAGENTA='\x01\e[0;35m\x02'
 CYAN='\x01\e[38;5;87m\x02'
 GRAY='\x01\e[0;37m\x02'
 BR_GREEN="\x01\e[38;5;76m\x02"
+VIOLET="\x01\e[38;5;9m\x02"
 
 # inline sequences for coloring
 INL_RED="\[\e[38;5;124m\]"
@@ -85,6 +86,12 @@ if check_command_exists kubectl; then
     function kns {
         kubectl config set-context --current --namespace="$1"
     }
+    source <(kubectl completion bash)
+fi
+
+
+if check_command_exists helm; then
+    source <(helm completion bash)
 fi
 
 ########################################
@@ -122,10 +129,14 @@ function ps1_date {
     echo -n "$(date +"%H:%M")"
 }
 
-# unused in favor of pretty-git-prompt
 function ps1_git {
-    BRANCH=$(git branch 2>/dev/null | grep '\*' | cut -c3-16 | tr -d "\n")
-    echo -ne "$BRANCH"
+    BRANCH=$(git branch 2>/dev/null | grep '\*' | cut -c3-20 | tr -d "\n")
+    N_STASHES=$(git stash list 2>/dev/null | wc -l)
+    if [ "$N_STASHES" -eq 0 ]; then
+        N_STASHES=""
+    fi
+       
+    echo -ne "${CYAN}$BRANCH $N_STASHES${RESET}"
 }
 
 # modded from https://stackoverflow.com/questions/10406926/how-do-i-change-the-default-virtualenv-prompt
