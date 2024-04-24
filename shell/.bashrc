@@ -1,13 +1,20 @@
 ## .bashrc file
-
 export PAGER=less
-export EDITOR="emacs -nw -q"
+
+# if running as a daemon, use emacsclient instead of emacs as EDITOR
+if ps -p $(pgrep emacs) | grep -- --daemon > /dev/null; then
+    export EDITOR="emacsclient -nw"
+else
+    export EDITOR="emacs -nw -q"
+fi
 
 # extended shell globbing
 shopt -s extglob
 shopt -s globstar
 # case insensitive globbing
 shopt -s nocaseglob
+# cd with only the directory name
+shopt -s autocd
 
 ########################################
 ## Aliases
@@ -26,6 +33,14 @@ alias gche="git checkout"
 alias gbra="git branch"
 
 alias cac="conda activate"
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+
+########################################
+## Color definitions
+########################################
 
 # \x01 and \x02 enclose zero length characters for proper readline support
 # https://stackoverflow.com/questions/32226139/escaping-zero-length-characters-in-bash
@@ -77,6 +92,7 @@ function check_command_exists {
 check_command_exists python
 check_command_exists python3
 check_command_exists rg
+check_command_exists fzf
 if check_command_exists direnv; then
     eval "$(direnv hook bash)"
 fi
@@ -94,6 +110,8 @@ fi
 if check_command_exists helm; then
     source <(helm completion bash)
 fi
+
+
 
 ########################################
 ## History config
@@ -198,20 +216,14 @@ function pretty_csv {
         | less  -F -S -X -K
 }
 
-# test with:
-# mkdir -p "QQ WW"/"This is spaces"/"Windows bullshit"/"good_folder"; mkdir -p "QQ WW"/"good"; mkdir -p "QQ WW"/"a b c d e"; mkdir -p "goodfolder"/"bad folder"; mkdir -p "bad fol der"/"good_folder"/"h or ri ble folder"
-function fix_dirnames {
+
+# https://stackoverflow.com/a/2709514/11579038
+function remove_filename_spaces_recursively {
     find . -depth -name '* *' \
-	| while IFS= read -r f ; do mv -i "$f" "$(dirname "$f")/$(basename "$f"|tr ' ' _)" ; done
+	    | while IFS= read -r f ; do mv -i "$f" "$(dirname "$f")/$(basename "$f"|tr ' ' _)" ; done
 }
 
-# find . -type d | awk -F ';' '/ / {print $1; gsub(" ", ""); print $1}' | sed -E 's/(.*)/"\1"/' | awk 'ORS=NR%2?FS:RS' | awk '{print gsub("/","/"), $0}' | sort -nr | cut -d '"' -f2- | sed 's/" "/\n/' | tr -d '"' | xargs -d "\n" -n 2 echo
-
-# function rename_spaces {
-#     echo "$@" | awk -F '\x00' '/ / {print $1; gsub(" ", ""); print $1}' | xargs -d "\n" -n 2 mv -i
-# }
-
-
+# transform a windows path (C:/...) to valid wsl path (/mnt/c...)
 function winpath_to_wsl {
     s="$1"
     echo "$s" | sed 's@\\@/@g' \
