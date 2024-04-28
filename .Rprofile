@@ -11,3 +11,15 @@ invisible(addTaskCallback(function(...) {
     }
     TRUE
 }, name = "ansi_reset"))
+
+
+# stop asking to save workspace 
+# https://stackoverflow.com/a/4996252
+utils::assignInNamespace(
+  "q", 
+  function(save = "no", status = 0, runLast = TRUE) 
+  {
+      .Internal(quit(save, status, runLast))
+  }, 
+  "base"
+)
