@@ -238,10 +238,8 @@ function winpath_to_wsl {
 # jump to the project root directory
 function cdp {
     export CDP_PREV="${PWD}"
-    while ! [ -d .git ]; do
-        if [ "${PWD}" = '/' ]; then
-            break
-        fi
-        cd ..
-    done
+    TOP=$(git rev-parse --show-toplevel 2>/dev/null)
+    if [ "$?" == 0 ]; then
+        cd "$TOP"
+    fi
 }
