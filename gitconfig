@@ -11,3 +11,5 @@
   path = ~/.gitconfig.local
 [diff]
   colorMoved = zebra
+[core]
+	excludesFile = ~/.gitignore
