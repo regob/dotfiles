@@ -79,7 +79,7 @@ function check_command_exists {
     which "$1" >/dev/null 2>&1
     _cmd_found="$?"
     if [ "$_cmd_found" -eq 0 ]; then
-        _msg="${BR_GREEN}$1${RESET} found at $(which $1)."
+        _msg="${BR_GREEN}$1${RESET} found at $(which "$1")."
     else
         _msg="${RED}$1${RESET} not found."
     fi
@@ -92,7 +92,10 @@ function check_command_exists {
 check_command_exists python
 check_command_exists python3
 check_command_exists rg
-check_command_exists fzf
+if check_command_exists fzf; then
+    alias fzf="fzf --reverse"
+fi
+
 if check_command_exists direnv; then
     eval "$(direnv hook bash)"
 fi
@@ -130,7 +133,7 @@ if check_command_exists hstr; then
     export PROMPT_COMMAND="history -a; history -n; ${PROMPT_COMMAND}"
 
     function hstrnotiocsti {
-        { READLINE_LINE="$( { </dev/tty hstr ${READLINE_LINE}; } 2>&1 1>&3 3>&- )"; } 3>&1;
+        { READLINE_LINE="$( { </dev/tty hstr "${READLINE_LINE}"; } 2>&1 1>&3 3>&- )"; } 3>&1;
         READLINE_POINT=${#READLINE_LINE}
     }
 
@@ -187,7 +190,7 @@ function ps1_summary {
     # result of previous command with green (successful) or red (failure, nonzero exit)
     prev_cmd=$([[ "$?" -eq 0 ]] && echo -ne "${BR_GREEN}+" || echo -ne "${RED}-")
     # number of directories in directory stack (fixed for dirs with spaces)
-    dir_stack_len=$(echo $(dirs -p | wc -l))
+    dir_stack_len="$(dirs -p | wc -l)"
 
     echo -ne "${BR_GREEN}${dir_stack_len}${prev_cmd}${RESET}"
 }
@@ -229,4 +232,16 @@ function winpath_to_wsl {
     echo "$s" | sed 's@\\@/@g' \
                     | (head -c 1 | tr A-Z a-z; sed 1q) \
                     | sed -E 's@^([a-z]):@/mnt/\1@'
+}
+
+
+# jump to the project root directory
+function cdp {
+    export CDP_PREV="${PWD}"
+    while ! [ -d .git ]; do
+        if [ "${PWD}" = '/' ]; then
+            break
+        fi
+        cd ..
+    done
 }
