@@ -1,4 +1,5 @@
-## .bashrc file
+#!/usr/bin/env bash
+
 export PAGER=less
 
 # if running as a daemon, use emacsclient instead of emacs as EDITOR
@@ -75,7 +76,7 @@ INL_GOLD="\[\e[38;5;185m\]"
 
 
 function check_command_exists {
-    # $1: command_name
+    # $1: command_name, $2 silent
     which "$1" >/dev/null 2>&1
     _cmd_found="$?"
     if [ "$_cmd_found" -eq 0 ]; then
@@ -84,14 +85,14 @@ function check_command_exists {
         _msg="${RED}$1${RESET} not found."
     fi
     
-    echo -e "$_msg"
+    # only display message if not in silent mode
+    [ "$2" == 0 ] || echo -e "$_msg"
     return "$_cmd_found"
 }
 
 
 check_command_exists python
 check_command_exists python3
-check_command_exists rg
 if check_command_exists fzf; then
     alias fzf="fzf --reverse"
 fi
@@ -109,10 +110,24 @@ if check_command_exists kubectl; then
     source <(kubectl completion bash)
 fi
 
-
 if check_command_exists helm; then
     source <(helm completion bash)
 fi
+
+function full_tooling_check {
+    check_command_exists python
+    check_command_exists python3
+    check_command_exists fzf
+    check_command_exists direnv
+    check_command_exists kubectl
+    check_command_exists helm
+    check_command_exists hstr
+    check_command_exists parallel
+    check_command_exists rg
+    check_command_exists ag
+}
+
+
 
 
 
