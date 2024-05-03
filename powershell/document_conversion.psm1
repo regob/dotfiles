@@ -1,4 +1,4 @@
-function Convert-Documents-Doc {
+function Convert-DocToPdf {
 
     param (
         [Parameter(Mandatory)] $DocumentPath,
@@ -25,7 +25,7 @@ function Convert-Documents-Doc {
     $word_app.Quit()
 }
 
-function Convert-Documents-Ppt {
+function Convert-PptToPdf {
 
     param (
         [Parameter(Mandatory)] $DocumentPath,
@@ -51,5 +51,5 @@ function Convert-Documents-Ppt {
     $PowerPoint.Quit()
 }
 
-Export-ModuleMember -Function Convert-Documents-Doc
-Export-ModuleMember -Function Convert-Documents-Ppt
+Export-ModuleMember -Function Convert-DocToPdf
+Export-ModuleMember -Function Convert-PptToPdf

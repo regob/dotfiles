@@ -3,16 +3,15 @@
 # C:\Users\[User]\Documents\WindowsPowerShell\profile.ps1
 # (For PowerShell 6+):
 # C:\Users\[User]\Documents\PowerShell\profile.ps1
-# add MSYS binaries to the front of the path
-$env:Path = 'C:\msys64\usr\bin;C:\msys64\bin;' + $env:Path
+
 #$env:PSModulePath = $env:PSModulePath + ';' + $LOCAL_PS_MODULES
-
-$Env:QUARTO_DENO_EXTRA_OPTIONS = "--v8-flags=--stack-size=1000000"
-
-
 
 # import local modules
 #Import-Module document_conversion
+
+Import-Module -Name "$PSScriptRoot/document_conversion"
+Import-Module -Name "$PSScriptRoot/utils"
+
 # aliases
 New-Alias ll ls
 # Use PsReadLine and switch to emacs mode
@@ -80,19 +79,16 @@ Set-PSReadLineKeyHandler -Key F7 `
         [Microsoft.PowerShell.PSConsoleReadLine]::Insert(($command -join "`n"))
     }
 }
+
 # In Emacs mode - Tab acts like in bash, but the Windows style completion
 # is still useful sometimes, so bind some keys so we can do both
 Set-PSReadLineKeyHandler -Key Ctrl+q -Function TabCompleteNext
 Set-PSReadLineKeyHandler -Key Ctrl+Q -Function TabCompletePrevious
+
 # CaptureScreen is good for blog posts or email showing a transaction
 # of what you did when asking for help or demonstrating a technique.
 # Set-PSReadLineKeyHandler -Chord 'Ctrl+d,Ctrl+c' -Function CaptureScreen
+
 # cannot hear >15khz, set it high enough to annoy other people
 # Set-PSReadLineOption -DingTone 13000
 # Set-PSReadLineOption -DingDuration 250
-#region mamba initialize
-# !! Contents within this block are managed by 'mamba shell init' !!
-$Env:MAMBA_ROOT_PREFIX = "C:\Users\ebogrer\Micromamba"
-$Env:MAMBA_EXE = "C:\Users\ebogrer\Micromamba\micromamba.exe"
-(& $Env:MAMBA_EXE 'shell' 'hook' -s 'powershell' -p $Env:MAMBA_ROOT_PREFIX) | Out-String | Invoke-Expression
-#endregion
