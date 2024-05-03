@@ -21,8 +21,8 @@ shopt -s autocd
 ## Aliases
 ########################################
 alias gadd="git add"
-alias gull="git pull origin"
-alias gush="git push origin"
+alias gull="git pull"
+alias gush="git push"
 alias giff="git diff"
 alias gcom="git commit --verbose"
 alias glog="git log"
@@ -32,6 +32,7 @@ alias gsta="git stash"
 alias gwha="git whatchanged"
 alias gche="git checkout"
 alias gbra="git branch"
+alias gfet="git fetch"
 
 alias cac="conda activate"
 alias ..="cd .."
