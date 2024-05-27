@@ -222,6 +222,12 @@ export PS1="${INL_VIOLET}["'$(ps1_summary)'"${S}${INL_GOLD}\u@\h${INL_RESET}${S}
 ## Misc Utility functions
 ########################################
 
+function swap()         
+{
+    local TMPFILE=tmp.$$
+    mv "$1" $TMPFILE && mv "$2" "$1" && mv $TMPFILE "$2"
+}
+
 # pretty csv adapted from: https://www.stefaanlippens.net/pretty-csv.html
 function pretty_csv {
     # cat "$@" | sed 's/,/ ,/g' | column -t -s, | less -S
