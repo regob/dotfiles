@@ -1,0 +1,20 @@
+## Some settings adapted from https://github.com/mathiasbynens/dotfiles
+
+# Make Tab autocomplete regardless of filename case
+set completion-ignore-case on
+
+# List all matches in case multiple possible completions are possible
+set show-all-if-ambiguous on
+
+# Immediately add a trailing slash when autocompleting symlinks to directories
+set mark-symlinked-directories on
+
+# Show extra file information when completing, like `ls -F` does
+set visible-stats on
+
+# When there is something entered, only scroll through history starting with that text
+"\C-p":history-search-backward
+"\C-n":history-search-forward
+
+# smart autocomplete on M-/
+"\e/": dabbrev-expand
