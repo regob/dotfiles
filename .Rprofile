@@ -14,12 +14,19 @@ invisible(addTaskCallback(function(...) {
 
 
 # stop asking to save workspace 
+# breaks LSP?
 # https://stackoverflow.com/a/4996252
-utils::assignInNamespace(
-  "q", 
-  function(save = "no", status = 0, runLast = TRUE) 
-  {
-      .Internal(quit(save, status, runLast))
-  }, 
-  "base"
-)
+## utils::assignInNamespace(
+##   "q", 
+##   function(save = "no", status = 0, runLast = TRUE) 
+##   {
+##       .Internal(quit(save, status, runLast))
+##   }, 
+##   "base"
+## )
+
+
+# https://stackoverflow.com/a/1189826
+options("width"=160)                # wide display with multiple monitors
+options("digits.secs"=3)            # show sub-second time stamps
+options(prompt="R> ", digits=4, show.signif.stars=FALSE)
