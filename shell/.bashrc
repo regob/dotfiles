@@ -3,7 +3,7 @@
 export PAGER=less
 
 # if running as a daemon, use emacsclient instead of emacs as EDITOR
-if ps -p $(pgrep emacs) | grep -- --daemon > /dev/null; then
+if ps -p $(pgrep emacs) 2>/dev/null | grep -- --daemon > /dev/null; then
     export EDITOR="emacsclient -nw"
 else
     export EDITOR="emacs -nw -q"
