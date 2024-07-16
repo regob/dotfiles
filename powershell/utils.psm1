@@ -20,4 +20,10 @@ function Get-WslPath {
     return $wsl_path
 }
 
+function venv {
+    . ./.venv/Scripts/Activate.ps1
+    echo (Get-Command python).Path
+}
+
 Export-ModuleMember -Function Get-BrParameterCount, Get-WslPath
+Export-ModuleMember -Function venv

@@ -228,6 +228,23 @@ function swap()
     mv "$1" $TMPFILE && mv "$2" "$1" && mv $TMPFILE "$2"
 }
 
+function venv
+{
+    if [ -n "$1" ]; then
+        _DIR="$1"
+    else
+        _DIR="./.venv"
+    fi
+
+    if ! [ -f "$_DIR/bin/activate" ]; then
+        echo "Error: venv dir not found: $_DIR"
+        return 1
+    fi
+
+    source "$_DIR/bin/activate"
+    echo "$(readlink -f $_DIR) activated"
+}
+
 # pretty csv adapted from: https://www.stefaanlippens.net/pretty-csv.html
 function pretty_csv {
     # cat "$@" | sed 's/,/ ,/g' | column -t -s, | less -S

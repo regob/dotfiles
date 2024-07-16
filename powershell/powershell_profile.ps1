@@ -14,6 +14,7 @@ Import-Module -Name "$PSScriptRoot/utils"
 
 # aliases
 New-Alias ll ls
+
 # Use PsReadLine and switch to emacs mode
 Import-Module PSReadLine
 Set-PSReadLineOption -EditMode Emacs
