@@ -128,10 +128,6 @@ function full_tooling_check {
     check_command_exists ag
 }
 
-
-
-
-
 ########################################
 ## History config
 ########################################
@@ -149,7 +145,7 @@ if check_command_exists hstr; then
     export PROMPT_COMMAND="history -a; history -n; ${PROMPT_COMMAND}"
 
     function hstrnotiocsti {
-        { READLINE_LINE="$( { </dev/tty hstr "${READLINE_LINE}"; } 2>&1 1>&3 3>&- )"; } 3>&1;
+        { READLINE_LINE="$( { </dev/tty hstr ${READLINE_LINE}; } 2>&1 1>&3 3>&- )"; } 3>&1;
         READLINE_POINT=${#READLINE_LINE}
     }
 
@@ -281,4 +277,31 @@ function cdp {
     if [ "$?" == 0 ]; then
         cd "$TOP"
     fi
+}
+
+
+# deprecated in favor of factor gnu util
+function factorize {
+    if [ -z "$1" ]; then
+        echo "usage: factorize NUMBER"
+        return
+    fi
+
+    factors=()
+    _I=2
+    _X="$1"
+    while [ $(( _I * _I )) -le "$_X" ]; do
+        if [ $(( _X % _I )) -eq 0 ]; then
+            factors+=("$_I")
+            _X=$(( _X / _I ))
+        else
+            _I=$(( _I + 1 ))
+        fi
+    done
+    
+    if [ $_X -gt 1 ]; then
+        factors+=("$_X")
+    fi
+
+    echo "${factors[@]}"
 }
