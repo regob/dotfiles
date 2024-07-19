@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+########################################
+## Some global settings
+########################################
+
+# path to this file's directory
+# https://stackoverflow.com/a/246128/11579038
+SHELL_DOTFILES_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
 export PAGER=less
 
 # if running as a daemon, use emacsclient instead of emacs as EDITOR
@@ -16,29 +24,6 @@ shopt -s globstar
 shopt -s nocaseglob
 # cd with only the directory name
 shopt -s autocd
-
-########################################
-## Aliases
-########################################
-alias gadd="git add"
-alias gull="git pull"
-alias gush="git push"
-alias giff="git diff"
-alias gcom="git commit --verbose"
-alias glog="git log"
-alias gmer="git merge"
-alias gstu="git status"
-alias gsta="git stash"
-alias gwha="git whatchanged"
-alias gche="git checkout"
-alias gbra="git branch"
-alias gfet="git fetch"
-
-alias cac="conda activate"
-alias ..="cd .."
-alias ...="cd ../.."
-alias ....="cd ../../.."
-alias .....="cd ../../../.."
 
 ########################################
 ## Color definitions
@@ -138,6 +123,7 @@ export HISTSIZE=-1               # unlimited history size
 export HISTFILESIZE=-1           # unlimited history file size
 
 
+# config adapted from https://github.com/dvorka/hstr
 if check_command_exists hstr; then
     alias hh=hstr
     export HSTR_CONFIG=hicolor       # get more colors
@@ -155,153 +141,12 @@ if check_command_exists hstr; then
     export HSTR_TIOCSTI=n
 fi
 
-########################################
-## PS1 prompt
-########################################
-
-function ps1_date {
-    echo -n "$(date +"%H:%M")"
-}
-
-function ps1_git {
-    BRANCH=$(git branch 2>/dev/null | grep '\*' | cut -c3-20 | tr -d "\n")
-    N_STASHES=$(git stash list 2>/dev/null | wc -l)
-    if [ "$N_STASHES" -eq 0 ]; then
-        N_STASHES=""
-    fi
-       
-    echo -ne "${CYAN}$BRANCH $N_STASHES${RESET}"
-}
-
-# modded from https://stackoverflow.com/questions/10406926/how-do-i-change-the-default-virtualenv-prompt
-function ps1_virtualenv_info {
-    if [[ -n "$VIRTUAL_ENV" ]]; then
-        # Strip out the path and just leave the env name
-        venv="${VIRTUAL_ENV##*/}"
-    else
-        # In case you don't have one activated
-        venv=''
-    fi
-
-    # also put changeps1: False to ~/.condarc to remove ps1 
-    conda_env=$(basename "$CONDA_PREFIX")
-    # conda_env=$(conda env list | grep "\*" | tr -s " " | cut -f1 -d " ")
-    if [[ -n "$venv" ]] && [[ -n "$conda_env" ]]; then
-        env_str="${conda_env}/${venv}"
-    elif [[ -z "$venv" ]] && [[ -z "$conda_env" ]]; then
-        env_str=""
-    else
-        # one of them is null: just concat them to get the non-null one (or empty)
-        env_str="${conda_env}${venv}"
-    fi
-
-    echo -n "${env_str}"
-}
-
-function ps1_summary {
-    # result of previous command with green (successful) or red (failure, nonzero exit)
-    prev_cmd=$([[ "$?" -eq 0 ]] && echo -ne "${BR_GREEN}+" || echo -ne "${RED}-")
-    # number of directories in directory stack (fixed for dirs with spaces)
-    dir_stack_len="$(dirs -p | wc -l)"
-
-    echo -ne "${BR_GREEN}${dir_stack_len}${prev_cmd}${RESET}"
-}
-
-# prevent python venv messing up the prompt
-export VIRTUAL_ENV_DISABLE_PROMPT=1
-
-S=" "
-export PS1="${INL_VIOLET}["'$(ps1_summary)'"${S}${INL_GOLD}\u@\h${INL_RESET}${S}${INL_VIOLET}\W${INL_RESET}${S}${INL_GRAY}"'$(ps1_virtualenv_info)'"${INL_RESET}${S}"'$(ps1_git)'"${INL_VIOLET}]>${INL_RESET} "    
-
 
 ########################################
-## Misc Utility functions
+## Load the other shell modules
 ########################################
 
-function swap()         
-{
-    local TMPFILE=tmp.$$
-    mv "$1" $TMPFILE && mv "$2" "$1" && mv $TMPFILE "$2"
-}
-
-function venv
-{
-    if [ -n "$1" ]; then
-        _DIR="$1"
-    else
-        _DIR="./.venv"
-    fi
-
-    if ! [ -f "$_DIR/bin/activate" ]; then
-        echo "Error: venv dir not found: $_DIR"
-        return 1
-    fi
-
-    source "$_DIR/bin/activate"
-    echo "$(readlink -f $_DIR) activated"
-}
-
-# pretty csv adapted from: https://www.stefaanlippens.net/pretty-csv.html
-function pretty_csv {
-    # cat "$@" | sed 's/,/ ,/g' | column -t -s, | less -S
-    s="$IFS"
-    if [ "$s" = "" ]; then
-        s=","
-    fi
-    perl -pe "s/((?<=$s)|(?<=^))$s/ $s/g;" "$@" \
-        | awk -F\" "{for (i=1; i<=NF; i+=2) gsub(/$s/,\"^\",\$i)} 1" OFS='"' \
-	| column -t -s'^' \
-        | less  -F -S -X -K
-}
-
-
-# https://stackoverflow.com/a/2709514/11579038
-function remove_filename_spaces_recursively {
-    find . -depth -name '* *' \
-	    | while IFS= read -r f ; do mv -i "$f" "$(dirname "$f")/$(basename "$f"|tr ' ' _)" ; done
-}
-
-# transform a windows path (C:/...) to valid wsl path (/mnt/c...)
-function winpath_to_wsl {
-    s="$1"
-    echo "$s" | sed 's@\\@/@g' \
-                    | (head -c 1 | tr A-Z a-z; sed 1q) \
-                    | sed -E 's@^([a-z]):@/mnt/\1@'
-}
-
-
-# jump to the project root directory
-function cdp {
-    export CDP_PREV="${PWD}"
-    TOP=$(git rev-parse --show-toplevel 2>/dev/null)
-    if [ "$?" == 0 ]; then
-        cd "$TOP"
-    fi
-}
-
-
-# deprecated in favor of factor gnu util
-function factorize {
-    if [ -z "$1" ]; then
-        echo "usage: factorize NUMBER"
-        return
-    fi
-
-    factors=()
-    _I=2
-    _X="$1"
-    while [ $(( _I * _I )) -le "$_X" ]; do
-        if [ $(( _X % _I )) -eq 0 ]; then
-            factors+=("$_I")
-            _X=$(( _X / _I ))
-        else
-            _I=$(( _I + 1 ))
-        fi
-    done
-    
-    if [ $_X -gt 1 ]; then
-        factors+=("$_X")
-    fi
-
-    echo "${factors[@]}"
-}
+source "${SHELL_DOTFILES_DIR}/ps1.sh"
+source "${SHELL_DOTFILES_DIR}/project_utils.sh"
+source "${SHELL_DOTFILES_DIR}/utils.sh"
+source "${SHELL_DOTFILES_DIR}/aliases.sh"
