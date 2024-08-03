@@ -4,13 +4,20 @@
 # (For PowerShell 6+):
 # C:\Users\[User]\Documents\PowerShell\profile.ps1
 
-#$env:PSModulePath = $env:PSModulePath + ';' + $LOCAL_PS_MODULES
-
-# import local modules
-#Import-Module document_conversion
-
 Import-Module -Name "$PSScriptRoot/document_conversion"
 Import-Module -Name "$PSScriptRoot/utils"
+
+# initialize posh prompt if installed
+$res=(Get-Command oh-my-posh)
+if ($res) {
+    # prevent python venv messing up the prompt
+    $env:VIRTUAL_ENV_DISABLE_PROMPT=1
+
+    # run posh init
+    & ([ScriptBlock]::Create((oh-my-posh init pwsh --config "$PSScriptRoot/oh_my_posh_theme.json" --print) -join "`n"))
+}
+
+
 
 # aliases
 New-Alias ll ls
@@ -28,6 +35,7 @@ Set-PSReadLineKeyHandler -Key Ctrl+d -ScriptBlock {
 # when you used up arrow, which can be useful if you forget the exact
 # string you started the search on.
 Set-PSReadLineOption -HistorySearchCursorMovesToEnd
+
 # This key handler shows the entire or filtered history using Out-GridView. The
 # typed text is used as the substring pattern for filtering. A selected command
 # is inserted to the command line without invoking. Multiple command selection
