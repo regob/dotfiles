@@ -25,10 +25,9 @@ New-Alias ll ls
 # Use PsReadLine and switch to emacs mode
 Import-Module PSReadLine
 Set-PSReadLineOption -EditMode Emacs
-Set-PSReadLineKeyHandler -Key Ctrl+d -ScriptBlock {
-	[Microsoft.PowerShell.PSConsoleReadLine]::ForwardChar()
-	[Microsoft.PowerShell.PSConsoleReadLine]::BackwardDeleteChar()
-}
+# Set-PSReadlineKeyHandler -Key ctrl+d -Function DeleteCharOrExit
+
+
 # The option "moves to end" is useful if you want the cursor at the end
 # of the line while cycling through history like it does w/o searching,
 # without that option, the cursor will remain at the position it was
