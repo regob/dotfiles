@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-
-
 # jump to the project root directory
 function cdp {
     export CDP_PREV="${PWD}"
@@ -53,9 +51,11 @@ function git_status_summary {
         echo -e "${RED}HEAD is detached, no branch info available!${RESET}"
     else
         echo -e "Current branch: ${BR_GREEN}${branch}${RESET}"
-       
-        local remote_branch=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>&1)
-        local remote_branch_exists="$?"
+        
+        # if executed in one line, the return code would always be 0 due to the 'local' command
+        local remote_branch
+        remote_branch=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>&1)
+        local remote_branch_exists=$?
 
         # show remote branch, and branch log diffs
         if [ "${remote_branch_exists}" -eq 0 ]; then
