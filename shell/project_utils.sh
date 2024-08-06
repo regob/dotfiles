@@ -9,8 +9,37 @@ function cdp {
     fi
 }
 
-# Prints the git status summary for all configured repos
+# Run git-sync on all configured project in the list SYNC_PROJECT_LIST
+function git_sync_all_projects {
+    if [ -z "${SYNC_PROJECT_LIST}" ]; then
+        echo "No projects found in SYNC_PROJECT_LIST. Nothing to do."
+        return
+    fi
+
+    which git-sync >/dev/null 2>&1
+    if [ "$?" -ne 0 ]; then
+        echo "git-sync not found, please install using:"
+        echo "git clone https://github.com/simonthum/git-sync"
+        return
+    fi
+
+    for project_dir in "${SYNC_PROJECT_LIST[@]}"; do
+        echo -e "${BLUE}Syncing $(realpath "$PWD")...${RESET}"
+        pushd "${project_dir}" >/dev/null
+        git-sync
+        popd >/dev/null
+        echo
+    done
+
+}
+
+# Prints the git status summary for all repos in PROJECT_LIST
 function git_project_statuses {
+    if [ -z "${PROJECT_LIST}" ]; then
+        echo "No projects found in PROJECT_LIST. Nothing to do."
+        return
+    fi
+
     for project_dir in "${PROJECT_LIST[@]}"; do
         git_status_summary "${project_dir}"
         echo ""
