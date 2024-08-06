@@ -3,15 +3,40 @@
 ## My PS1 prompt configuration, which looks like this:
 ## [2+ rego@tw dotfiles .venv main ]>
 
-
 function ps1_git {
-    BRANCH=$(git branch 2>/dev/null | grep '\*' | cut -c3-20 | tr -d "\n")
-    N_STASHES=$(git stash list 2>/dev/null | wc -l)
-    if [ "$N_STASHES" -eq 0 ]; then
-        N_STASHES=""
+    # Check if the directory is a git repository
+    if ! git rev-parse --git-dir > /dev/null 2>&1; then
+        return
     fi
-       
-    echo -ne "${CYAN}$BRANCH $N_STASHES${RESET}"
+    
+    local BRANCH=$(git branch --show-current 2>&1)
+
+    # detached head - show commit hash
+    if [ -z "$BRANCH" ]; then
+        local BRANCH=$(git rev-parse @ | cut -c1-8)
+    fi
+
+    local n_stashes=$(git stash list 2>/dev/null | wc -l)
+    
+    # if remote branch exists check unpulled/unpushed commits
+    git rev-parse --abbrev-ref --symbolic-full-name @{u} 1>/dev/null 2>&1
+    if [ "$?" -eq 0 ]; then
+        local unpushed=$(git log @{u}.. --oneline 2>/dev/null | wc -l)
+        local unpulled=$(git log ..@{u} --oneline 2>/dev/null | wc -l)
+    else
+        local unpulled=-
+        local unpushed=-
+    fi
+
+    # append a + or - indicating dirty status
+    local status=$(git status --porcelain)
+    if [ -z "$status" ]; then
+        local status=-
+    else
+        local status=+
+    fi
+
+    echo -ne "${CYAN}$BRANCH ${unpushed}/${unpulled}/${n_stashes}${status}${RESET}"
 }
 
 # modded from https://stackoverflow.com/questions/10406926/how-do-i-change-the-default-virtualenv-prompt
