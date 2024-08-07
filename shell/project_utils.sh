@@ -24,8 +24,8 @@ function git_sync_all_projects {
     fi
 
     for project_dir in "${SYNC_PROJECT_LIST[@]}"; do
-        echo -e "${BLUE}Syncing $(realpath "$PWD")...${RESET}"
         pushd "${project_dir}" >/dev/null
+        echo -e "${BLUE}Syncing $(realpath "$PWD")...${RESET}"
         git-sync
         popd >/dev/null
         echo
