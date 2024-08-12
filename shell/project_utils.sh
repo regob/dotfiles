@@ -25,8 +25,23 @@ function git_sync_all_projects {
 
     for project_dir in "${SYNC_PROJECT_LIST[@]}"; do
         pushd "${project_dir}" >/dev/null
-        echo -e "${BLUE}Syncing $(realpath "$PWD")...${RESET}"
-        git-sync
+        
+        # if no upstream just commit
+        if ! git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>&1; then
+            echo "No upstream configured ... only committing locally ..."
+
+            git add -A
+            if git commit -m "changes from $(uname -n) on $(date)"; then
+                echo "Commit successful: $(git rev-parse @ | head -c 8)!"
+            else
+                echo "Commit failed!"
+            fi
+            
+            else
+                echo -e "${BLUE}Syncing $(realpath "$PWD")...${RESET}"
+                git-sync
+        fi
+
         popd >/dev/null
         echo
     done
