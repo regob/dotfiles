@@ -25,21 +25,24 @@ function git_sync_all_projects {
 
     for project_dir in "${SYNC_PROJECT_LIST[@]}"; do
         pushd "${project_dir}" >/dev/null
+
+        echo -e "${BLUE}Syncing $(realpath "$PWD")${RESET}"
         
         # if no upstream just commit
-        if ! git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>&1; then
-            echo "No upstream configured ... only committing locally ..."
-
+        if ! git rev-parse --abbrev-ref --symbolic-full-name @{u} 1>/dev/null 2>&1; then
+            echo -e "${VIOLET}No upstream configured ... only committing locally ... ${RESET}"
+            
             git add -A
-            if git commit -m "changes from $(uname -n) on $(date)"; then
-                echo "Commit successful: $(git rev-parse @ | head -c 8)!"
+            if [ -z "$(git status --porcelain 2>&1)" ]; then 
+                echo -e "${GREEN}No commit needed, no changes exist!${RESET}"
+            elif git commit -m "changes from $(uname -n) on $(date)"; then
+                echo -e "${GREEN}Commit successful: $(git rev-parse @ | head -c 8)!${RESET}"
             else
-                echo "Commit failed!"
+                echo -e "${RED}Commit failed!${RESET}"
             fi
             
-            else
-                echo -e "${BLUE}Syncing $(realpath "$PWD")...${RESET}"
-                git-sync
+        else
+            git-sync
         fi
 
         popd >/dev/null
