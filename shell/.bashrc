@@ -8,6 +8,10 @@
 # https://stackoverflow.com/a/246128/11579038
 SHELL_DOTFILES_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
+# check if running in an interactive shell
+[[ $- == *i* ]]
+IS_INTERACTIVE="$?"
+
 export PAGER=less
 
 # if running as a daemon, use emacsclient instead of emacs as EDITOR
@@ -60,7 +64,6 @@ INL_GOLD="\[\e[38;5;185m\]"
 ## Set up tools
 ########################################
 
-
 function check_command_exists {
     # $1: command_name, $2 silent
     which "$1" >/dev/null 2>&1
@@ -77,17 +80,17 @@ function check_command_exists {
 }
 
 
-check_command_exists python
-check_command_exists python3
-if check_command_exists fzf; then
+check_command_exists python 0
+check_command_exists python3 0
+if check_command_exists fzf 0; then
     alias fzf="fzf --reverse"
 fi
 
-if check_command_exists direnv; then
+if check_command_exists direnv 0; then
     eval "$(direnv hook bash)"
 fi
 
-if check_command_exists kubectl; then
+if check_command_exists kubectl 0; then
     alias k="kubectl"
     
     function kns {
@@ -96,7 +99,7 @@ if check_command_exists kubectl; then
     source <(kubectl completion bash)
 fi
 
-if check_command_exists helm; then
+if check_command_exists helm 0; then
     source <(helm completion bash)
 fi
 
@@ -124,7 +127,7 @@ export HISTFILESIZE=-1           # unlimited history file size
 
 
 # config adapted from https://github.com/dvorka/hstr
-if check_command_exists hstr; then
+if check_command_exists hstr 0; then
     alias hh=hstr
     export HSTR_CONFIG=hicolor       # get more colors
     # ensure synchronization between bash memory and history file
