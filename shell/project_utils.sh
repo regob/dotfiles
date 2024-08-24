@@ -9,6 +9,15 @@ function cdp {
     fi
 }
 
+function git_auto_commit {
+    git add -A
+    if git commit -m "changes from $(uname -n) on $(date)"; then
+        echo "Commit successful: $(git rev-parse @ | head -c 8)!"
+    else
+        echo "Commit failed!"
+    fi
+}
+
 # Run git-sync on all configured project in the list SYNC_PROJECT_LIST
 function git_sync_all_projects {
     if [ -z "${SYNC_PROJECT_LIST}" ]; then
