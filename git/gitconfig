@@ -13,3 +13,11 @@
   colorMoved = zebra
 [core]
 	excludesFile = ~/.gitignore
+# emacs lisp function hunk rule
+[diff "elisp"]
+  xfuncname = ^\\([^[:space:]]+[[:space:]]+([^()[:space:]]+)
+# Configure ediff to be understood as a difftool (https://stackoverflow.com/a/42636500/11579038)
+[difftool "ediff"]
+          cmd = emacs -q -nw --eval \"(ediff-files \\\"$LOCAL\\\" \\\"$REMOTE\\\")\"
+[difftool "ediffclient"]
+          cmd = emacsclient --eval \"(ediff-files \\\"$LOCAL\\\" \\\"$REMOTE\\\")\"
