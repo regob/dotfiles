@@ -13,6 +13,7 @@
   colorMoved = zebra
 [core]
 	excludesFile = ~/.gitignore
+    attributesFile = ~/.gitattributes
 # emacs lisp function hunk rule
 [diff "elisp"]
   xfuncname = ^\\([^[:space:]]+[[:space:]]+([^()[:space:]]+)

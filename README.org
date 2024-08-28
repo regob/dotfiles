@@ -1,0 +1,57 @@
+* Dotfiles
+
+** Installation
+
+Most files are installed automatically by ~./install.sh~.
+The following are installed manually.
+
+*** Bash
+
+Include in ~\~/.bashrc~:
+
+#+begin_src bash
+  export DOTFILE_DIR=~/devel/dotfiles
+  source $DOTFILE_DIR/shell/.bashrc
+
+  # optionally set project and sync project list
+  export PROJECT_LIST=(
+  )
+  export SYNC_PROJECT_LIST=(
+  )
+  export LOCAL_MACHINE=1
+#+end_src
+
+*** SSH
+
+Check if the path to dotfiles is in ~\~/.ssh/config~:
+
+#+begin_src example
+Include ~/devel/dotfiles/ssh_config
+#+end_src
+
+
+*** Powershell
+
+Call the root dotfile from the default powershell config:
+
+#+begin_src powershell
+# To be installed at (For Windows Power Shell <= version 5):
+# C:\Users\[User]\Documents\WindowsPowerShell\profile.ps1
+# (For PowerShell 6+):
+# C:\Users\[User]\Documents\PowerShell\profile.ps1
+
+& "C:/Path/to/dotfiles/powershell/powershell_profile.ps1"
+#+end_src
+
+*** Firefox
+
+Link ~./firefox/userChrome.css~ under profile (path might differ):
+
+#+begin_src bash
+./install.sh ./firefox/userChrome.css ~/.mozilla/firefox/RELEASE/chrome/userChrome.css
+#+end_src
+
+
+*** Python
+
+Jupyter keybinds are installed manually in AWS SageMaker Preferences.
