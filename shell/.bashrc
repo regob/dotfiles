@@ -29,6 +29,11 @@ shopt -s nocaseglob
 # cd with only the directory name
 shopt -s autocd
 
+# turn off annoying tty features:
+# Ctrl+S and Ctrl+Q to suspend and unsuspend input
+# https://unix.stackexchange.com/a/12108/426499
+stty -ixon
+
 ########################################
 ## Color definitions
 ########################################
