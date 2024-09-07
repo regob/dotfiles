@@ -145,7 +145,7 @@ if check_command_exists hstr 0; then
 
 
     # if this is interactive shell, then bind hstr to Ctrl-r (for Vi mode check doc)
-    if [[ $- =~ .*i.* ]]; then bind -x '"\C-r": "hstrnotiocsti"'; fi
+    if [[ $- =~ .*i.* ]]; then bind -x '"\e\C-r": "hstrnotiocsti"'; fi
     export HSTR_TIOCSTI=n
 fi
 
