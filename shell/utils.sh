@@ -1,5 +1,20 @@
 #!/usr/bin/env bash
 
+# Add $1 to path if it is not there already
+function pathmunge {
+    # remove slashes from the end
+    EXTRA=$(echo "$1" | sed -E 's@/+$@@')
+    case ":${PATH}:" in
+        *"$EXTRA"*)
+            ;;
+        *)
+            if [ "$2" = "after" ] ; then
+                PATH="$PATH:$EXTRA"
+            else
+                PATH="$EXTRA:$PATH"
+            fi
+    esac
+}
 
 function swap
 {
