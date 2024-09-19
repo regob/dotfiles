@@ -32,7 +32,9 @@ shopt -s autocd
 # turn off annoying tty features:
 # Ctrl+S and Ctrl+Q to suspend and unsuspend input
 # https://unix.stackexchange.com/a/12108/426499
-stty -ixon
+if [ 0 -eq "$IS_INTERACTIVE" ]; then
+    stty -ixon
+fi
 
 ########################################
 ## Color definitions
