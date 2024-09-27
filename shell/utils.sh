@@ -55,8 +55,25 @@ function pretty_csv {
 
 # https://stackoverflow.com/a/2709514/11579038
 function remove_filename_spaces_recursively {
-    find . -depth -name '* *' \
-	    | while IFS= read -r f ; do mv -i "$f" "$(dirname "$f")/$(basename "$f"|tr ' ' _)" ; done
+    if [ -z "$1" ]; then
+        echo "Usage remove_filename_spaces_recursively DIR"
+        return
+    fi
+    find "$1" -depth -name '* *' \
+	    | while IFS= read -r f ; do {
+        mv -i "$f" "$(dirname "$f")/$(basename "$f"|tr ' ' _)" </dev/tty ; 
+    } done
+}
+
+function remove_filename_space_num_recursively {
+    if [ -z "$1" ]; then
+        echo "Usage remove_filename_space_num_recursively DIR"
+        return
+    fi
+    find "$1" -depth -regex '.* [0-9]+\..*' -type f \
+        | while IFS= read -r f ; do {
+        mv -i "$f" "$(dirname "$f")/$(basename "$f" | sed -E 's/ [0-9]+//')" </dev/tty
+    } done
 }
 
 # transform a windows path (C:/...) to valid wsl path (/mnt/c...)
