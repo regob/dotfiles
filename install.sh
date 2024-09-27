@@ -114,7 +114,7 @@ grep Include ~/.ssh/config \
     | grep -q "^$(realpath -e ./ssh_config)$"
 
 if [ "$?" -ne 0 ]; then
-    echo "Include $(realpath -e ./ssh_config)" >> ~/.ssh/config
+    echo -e "\nInclude $(realpath -e ./ssh_config)" >> ~/.ssh/config
 fi
 
 # Misc ########################################################################
