@@ -1,5 +1,12 @@
 * Dotfiles
 
+A random collection of config files I like to reuse across machines.
+
+** Conventions
+
+- I name custom bash functions prefixed by a hyphen (-), cause I cannot remember their names :-)
+- Except for some short ones like ~cdp~ or ~venv~ and aliases...
+
 ** Installation
 
 Most files are installed automatically by ~./install.sh~.

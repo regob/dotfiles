@@ -9,7 +9,7 @@ function cdp {
     fi
 }
 
-function git_auto_commit {
+function -git_auto_commit {
     git add -A
     if git commit -m "changes from $(uname -n) on $(date)"; then
         echo "Commit successful: $(git rev-parse @ | head -c 8)!"
@@ -19,7 +19,7 @@ function git_auto_commit {
 }
 
 # Run git-sync on all configured project in the list SYNC_PROJECT_LIST
-function git_sync_all_projects {
+function -git_sync_all_projects {
     if [ -z "${SYNC_PROJECT_LIST}" ]; then
         echo "No projects found in SYNC_PROJECT_LIST. Nothing to do."
         return
@@ -61,14 +61,14 @@ function git_sync_all_projects {
 }
 
 # Prints the git status summary for all repos in PROJECT_LIST
-function git_project_statuses {
+function -git_project_statuses {
     if [ -z "${PROJECT_LIST}" ]; then
         echo "No projects found in PROJECT_LIST. Nothing to do."
         return
     fi
 
     for project_dir in "${PROJECT_LIST[@]}"; do
-        git_status_summary "${project_dir}"
+        -git_status_summary "${project_dir}"
         echo ""
     done
 }
@@ -77,10 +77,10 @@ function git_project_statuses {
 # Prints a summary of the git repo passed
 # The summary includes commits on the current/remote tracking branch
 # and dirty files in the worktree/index
-function git_status_summary {
+function -git_status_summary {
     # Check if the argument is provided
     if [ -z "$1" ]; then
-        echo "Usage: git_status_summary <path-to-git-repo>"
+        echo "Usage: -git_status_summary <path-to-git-repo>"
         return 1
     fi
 

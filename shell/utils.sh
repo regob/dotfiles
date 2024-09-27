@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Add $1 to path if it is not there already
-function pathmunge {
+function -pathmunge {
     # remove slashes from the end
     EXTRA=$(echo "$1" | sed -E 's@/+$@@')
     case ":${PATH}:" in
@@ -40,7 +40,7 @@ function venv
 }
 
 # pretty csv adapted from: https://www.stefaanlippens.net/pretty-csv.html
-function pretty_csv {
+function -pretty_csv {
     # cat "$@" | sed 's/,/ ,/g' | column -t -s, | less -S
     s="$IFS"
     if [ "$s" = "" ]; then
@@ -54,9 +54,9 @@ function pretty_csv {
 
 
 # https://stackoverflow.com/a/2709514/11579038
-function remove_filename_spaces_recursively {
+function -remove_filename_spaces_recursively {
     if [ -z "$1" ]; then
-        echo "Usage remove_filename_spaces_recursively DIR"
+        echo "Usage -remove_filename_spaces_recursively DIR"
         return
     fi
     find "$1" -depth -name '* *' \
@@ -65,7 +65,7 @@ function remove_filename_spaces_recursively {
     } done
 }
 
-function remove_filename_space_num_recursively {
+function -remove_filename_space_num_recursively {
     if [ -z "$1" ]; then
         echo "Usage remove_filename_space_num_recursively DIR"
         return
@@ -77,7 +77,7 @@ function remove_filename_space_num_recursively {
 }
 
 # transform a windows path (C:/...) to valid wsl path (/mnt/c...)
-function winpath_to_wsl {
+function -winpath_to_wsl {
     s="$1"
     echo "$s" | sed 's@\\@/@g' \
                     | (head -c 1 | tr A-Z a-z; sed 1q) \
@@ -86,7 +86,7 @@ function winpath_to_wsl {
 
 
 # deprecated in favor of factor gnu util
-function factorize {
+function -factorize {
     if [ -z "$1" ]; then
         echo "usage: factorize NUMBER"
         return

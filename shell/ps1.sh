@@ -3,7 +3,7 @@
 ## My PS1 prompt configuration, which looks like this:
 ## [2+ rego@tw dotfiles .venv main ]>
 
-function ps1_git {
+function -ps1_git {
     # Check if the directory is a git repository
     if ! git rev-parse --git-dir > /dev/null 2>&1; then
         return
@@ -40,7 +40,7 @@ function ps1_git {
 }
 
 # modded from https://stackoverflow.com/questions/10406926/how-do-i-change-the-default-virtualenv-prompt
-function ps1_virtualenv_info {
+function -ps1_virtualenv_info {
     if [[ -n "$VIRTUAL_ENV" ]]; then
         # Strip out the path and just leave the env name
         venv="${VIRTUAL_ENV##*/}"
@@ -64,7 +64,7 @@ function ps1_virtualenv_info {
     echo -n "${env_str}"
 }
 
-function ps1_summary {
+function -ps1_summary {
     # result of previous command with green (successful) or red (failure, nonzero exit)
     prev_cmd=$([[ "$?" -eq 0 ]] && echo -ne "${BR_GREEN}+" || echo -ne "${RED}-")
     # number of directories in directory stack (fixed for dirs with spaces)
@@ -77,4 +77,4 @@ function ps1_summary {
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 S=" "
-export PS1="${INL_VIOLET}["'$(ps1_summary)'"${S}${INL_GOLD}\u@\h${INL_RESET}${S}${INL_VIOLET}\W${INL_RESET}${S}${INL_GRAY}"'$(ps1_virtualenv_info)'"${INL_RESET}${S}"'$(ps1_git)'"${INL_VIOLET}]>${INL_RESET} "    
+export PS1="${INL_VIOLET}["'$(-ps1_summary)'"${S}${INL_GOLD}\u@\h${INL_RESET}${S}${INL_VIOLET}\W${INL_RESET}${S}${INL_GRAY}"'$(-ps1_virtualenv_info)'"${INL_RESET}${S}"'$(-ps1_git)'"${INL_VIOLET}]>${INL_RESET} "    
