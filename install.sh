@@ -15,28 +15,23 @@ usage() {
 }
 
 
-for opt in "$@"; do
-    case $opt in
-        -h|--help|--usage)
-            usage
-            ;;
-        *)
-            ;;
-    esac
-done
-
-case "$#" in
-    0)
-        INSTALL_ALL=0
-        ;;
-    2)
-        INSTALL_ALL=1
-        ;;
-    *)
-        usage
-        ;;
-esac
-
+prompt_yes_no() {
+    while true; do
+        read -p "$1 [y/n]: "
+        case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+            y|yes) 
+                echo "yes"
+                return
+                ;;
+            n|no)  
+                echo "no"
+                return
+                ;;
+            *)
+                ;;
+        esac
+    done
+}
 
 # Install a dotfile with prompt if the file exists already
 install_dotfile() {
@@ -80,11 +75,45 @@ install_dotfile() {
         done
     fi
 
+    # link directory does not exist
+    _parent_dir="$(dirname "$link_path")"
+    if ! [ -d "$_parent_dir" ]; then
+        REPLY=$(prompt_yes_no "Directory $_parent_dir does not exist. Do you want to create it?")
+        if [ "$REPLY" == yes ]; then
+            mkdir -p "$_parent_dir"
+        else
+            echo "Directory not created, aborting."
+            return 0
+        fi
+    fi
+
     # Create the link if it doesn't exist or is broken
     rm "$link_path" 2>/dev/null
     ln -s "$target_path" "$link_path"
     echo "${link_path} -> ${target_path} installed."
 }
+
+for opt in "$@"; do
+    case $opt in
+        -h|--help|--usage)
+            usage
+            ;;
+        *)
+            ;;
+    esac
+done
+
+case "$#" in
+    0)
+        INSTALL_ALL=0
+        ;;
+    2)
+        INSTALL_ALL=1
+        ;;
+    *)
+        usage
+        ;;
+esac
 
 
 if [ $INSTALL_ALL -ne 0 ]; then
@@ -114,8 +143,14 @@ grep Include ~/.ssh/config \
     | grep -q "^$(realpath -e ./ssh_config)$"
 
 if [ "$?" -ne 0 ]; then
+    prompt_yes_no "ssh not configured yet. Include this config in global file?"
     echo -e "\nInclude $(realpath -e ./ssh_config)" >> ~/.ssh/config
+else
+    echo "ssh config already installed."
 fi
+
+# python ######################################################################
+install_dotfile "$DIR"/python/uv.toml "$HOME"/.config/uv/uv.toml
 
 # Misc ########################################################################
 install_dotfile "$DIR"/.Rprofile "$HOME"/.Rprofile
