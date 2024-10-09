@@ -137,14 +137,18 @@ install_dotfile "$DIR"/git/gitattributes "$HOME"/.gitattributes
 
 # ssh #########################################################################
 # Check if the dotfile is already included
-grep Include ~/.ssh/config \
+grep -E "Include (\\w|/)+" ~/.ssh/config \
     | cut -d ' ' -f2 \
     | xargs -I % sh -c 'realpath -e %' \
     | grep -q "^$(realpath -e ./ssh_config)$"
 
 if [ "$?" -ne 0 ]; then
-    prompt_yes_no "ssh not configured yet. Include this config in global file?"
-    echo -e "\nInclude $(realpath -e ./ssh_config)" >> ~/.ssh/config
+    REPLY=$(prompt_yes_no "ssh not configured yet. Include this config in global file?")
+    if [[ "$REPLY" == "yes" ]]; then
+        echo -e "\nInclude $(realpath -e ./ssh_config)" >> ~/.ssh/config        
+    else
+        echo "Not including ssh config."
+    fi
 else
     echo "ssh config already installed."
 fi
