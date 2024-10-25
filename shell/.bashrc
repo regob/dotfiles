@@ -110,7 +110,7 @@ if check_command_exists helm 0; then
     source <(helm completion bash)
 fi
 
-function full_tooling_check {
+function -full_tooling_check {
     check_command_exists python
     check_command_exists python3
     check_command_exists fzf
@@ -140,6 +140,9 @@ if check_command_exists hstr 0; then
     # ensure synchronization between bash memory and history file
     export PROMPT_COMMAND="history -a; history -n; ${PROMPT_COMMAND}"
 
+    # use the fix for systems without tiocsti syscall
+    # which got removed due to security issues from kernel 6.2
+    # https://ruderich.org/simon/notes/su-sudo-from-root-tty-hijacking
     function hstrnotiocsti {
         { READLINE_LINE="$( { </dev/tty hstr -- ${READLINE_LINE}; } 2>&1 1>&3 3>&- )"; } 3>&1;
         READLINE_POINT=${#READLINE_LINE}

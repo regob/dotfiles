@@ -39,6 +39,72 @@ function venv
     echo "$(readlink -f $_DIR) activated"
 }
 
+function _safe_rm_file {
+    if [ -f "$1" ] || [ -L "$1" ] || [ -p "$1" ]; then
+        file_type=$(stat -c "%F" "$1")
+        echo -e "Delete $CYAN${file_type}$RESET $RED$1$RESET?"
+        select action in yes no; do
+            case $action in
+                yes)
+                    /bin/rm -f "$1"
+                    break
+                    ;;
+                no)
+                    break
+                    ;;
+            esac
+        done
+
+    elif [ -d "$1" ]; then
+        n_files=$(ls -A "$1" | wc -l)
+        echo -e "Delete directory $RED$1$RESET containing $CYAN${n_files}$RESET files?"
+        select action in enter no recurse list; do
+            case $action in
+                no)
+                    break
+                    ;;
+                recurse)
+                    /bin/rm -rf "$1"
+                    break
+                    ;;
+                enter)
+                    while IFS= read -r -d '' file; do
+                        </dev/tty _safe_rm_file "$file"
+                    done < <(find "$1" -type l,f,p -print0)
+                    
+                    if [ -z "$(ls -A "$1")" ]; then
+                        echo -e "Deleting empty directory $RED$1$RESET"
+                    fi
+                    break
+                    ;;
+                list)
+                    ls -Al "$1"
+                    ;;
+            esac
+        done
+    else
+        echo -e "Skipping unknown file type: $RED$1$RESET"
+    fi
+}
+
+function -safe_rm {
+    if [ -z "$1" ]; then
+        echo "No argument provided."
+        return 1
+    fi
+
+    args=($@)
+    echo -e "Trying to delete $CYAN${#args[@]}$RESET files/directories ..."
+
+    for fname in "${args[@]}"; do
+        if [ -e  "$fname" ] || [ -L "$file" ]; then
+            _safe_rm_file "$fname"
+        else
+            echo -e "$RED${fname}$RESET does not exist."
+        fi
+    done
+}
+
 # pretty csv adapted from: https://www.stefaanlippens.net/pretty-csv.html
 function -pretty_csv {
     # cat "$@" | sed 's/,/ ,/g' | column -t -s, | less -S
