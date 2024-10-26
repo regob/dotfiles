@@ -29,6 +29,7 @@ function venv
     else
         _DIR="./.venv"
     fi
+    _DIR=$(realpath "$_DIR")
 
     if ! [ -f "$_DIR/bin/activate" ]; then
         echo "Error: venv dir not found: $_DIR"
@@ -36,7 +37,16 @@ function venv
     fi
 
     source "$_DIR/bin/activate"
-    echo "$(readlink -f $_DIR) activated"
+    echo "$_DIR activated"
+
+    _VENV_PATH=$(realpath "$VIRTUAL_ENV" 2>/dev/null)
+    if [ "$_VENV_PATH" != "$_DIR" ]; then
+        echo "Error: The venv is broken, please recreate it. VIRTUAL_ENV=${VIRTUAL_ENV}"
+        if type deactivate >/dev/null 2>&1; then
+            deactivate
+        fi
+        return 1
+    fi
 }
 
 function _safe_rm_file {
