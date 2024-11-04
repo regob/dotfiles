@@ -1,2 +1,5 @@
+link-mode = "symlink"
+
 [pip]
+# legacy option
 link-mode = "symlink"
