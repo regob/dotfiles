@@ -1,1 +1,26 @@
+# python
+__pycache__/
+*.py[cod]
+.venv
+
+
+# backup files
+*.bak
+*~
+
+# temporary files
+*.#
 TAGS
+*.-undo-tree
+
+# binaries
+*.so
+*.exe
+*.zip
+*.gz
+*.parquet
+*.bz2
+
+# local environment
+.env
+.envrc
