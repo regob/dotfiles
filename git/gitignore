@@ -1,9 +1,3 @@
-# python
-__pycache__/
-*.py[cod]
-.venv
-
-
 # backup files
 *.bak
 *~
@@ -24,3 +18,26 @@ TAGS
 # local environment
 .env
 .envrc
+
+# python
+__pycache__/
+*.py[cod]
+.venv
+
+## Distribution / packaging
+.Python
+develop-eggs/
+dist/
+eggs/
+.eggs/
+parts/
+sdist/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Jupyter Notebook
+.ipynb_checkpoints
