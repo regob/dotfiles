@@ -1,4 +1,5 @@
 link-mode = "symlink"
+config-settings = { editable_mode = "compat" }
 
 [pip]
 # legacy option

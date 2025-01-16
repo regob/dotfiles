@@ -110,6 +110,10 @@ if check_command_exists helm 0; then
     source <(helm completion bash)
 fi
 
+if check_command_exists uv 0; then
+    source <(uv generate-shell-completion bash)
+fi
+
 function -full_tooling_check {
     check_command_exists python
     check_command_exists python3
@@ -121,6 +125,7 @@ function -full_tooling_check {
     check_command_exists parallel
     check_command_exists rg
     check_command_exists ag
+    check_command_exists uv
 }
 
 ########################################
