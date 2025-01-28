@@ -117,14 +117,13 @@ function -safe_rm {
 
 # pretty csv adapted from: https://www.stefaanlippens.net/pretty-csv.html
 function -pretty_csv {
-    # cat "$@" | sed 's/,/ ,/g' | column -t -s, | less -S
     s="$IFS"
-    if [ "$s" = "" ]; then
+    if [ -z "$s" ]; then
         s=","
     fi
     perl -pe "s/((?<=$s)|(?<=^))$s/ $s/g;" "$@" \
         | awk -F\" "{for (i=1; i<=NF; i+=2) gsub(/$s/,\"^\",\$i)} 1" OFS='"' \
-	| column -t -s'^' \
+	    | column -t -s'^' \
         | less  -F -S -X -K
 }
 
