@@ -13,6 +13,7 @@ SHELL_DOTFILES_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null &
 IS_INTERACTIVE="$?"
 
 export PAGER=less
+export IFS=
 
 # if running as a daemon, use emacsclient instead of emacs as EDITOR
 if ps -p $(pgrep emacs) 2>/dev/null | grep -- --daemon > /dev/null; then
