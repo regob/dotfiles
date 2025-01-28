@@ -159,6 +159,12 @@ function -winpath_to_wsl {
                     | sed -E 's@^([a-z]):@/mnt/\1@'
 }
 
+# release cached memory in wsl
+function -wsl_release_memory() {
+    sudo bash -c "sync; echo 3 > /proc/sys/vm/drop_caches"
+}
+
+
 
 # deprecated in favor of factor gnu util
 function -factorize {
@@ -184,4 +190,37 @@ function -factorize {
     fi
 
     echo "${factors[@]}"
+}
+
+# extraction of nested .tar.gz file
+function -extract_nested_tarball() {
+    if [ -z "$1" ]; then
+        return 1
+    fi
+    
+    echo "Extracting $(realpath "$1") ..."
+    TOP_DIR=$(tar tf "$1" | cut -d '/' -f1 | sort -u)
+    NUM_TOP_DIRS=$(echo "$TOP_DIR" | wc -l)
+    if [ "$NUM_TOP_DIRS" -gt 1 ]; then
+        echo "Multiple top directories in the tar archive"
+        return 1
+    fi
+
+    if [ -z "$TOP_DIR" ]; then
+        echo "No top level directories in the tar archive"
+        return 1
+    fi
+    tar -xf "$1"
+
+    # Find and extract nested archives
+    pushd "$TOP_DIR" &>/dev/null
+
+    find . -type f \( -name "*.tar" -o -name "*.tar.gz" -o -name "*.tgz" \) -print0 | while IFS= read -r -d '' archive; do 
+        -extract_nested_tarball "$archive" "delete"
+    done
+    popd &>/dev/null
+
+    if [ "$2" == "delete" ]; then
+        rm "$1"
+    fi
 }
