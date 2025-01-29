@@ -14,7 +14,7 @@ The following are installed manually.
 
 *** Bash
 
-Include in ~~/.bashrc~:
+Include in =~/.bashrc=:
 
 #+begin_src bash
   export DOTFILE_DIR=~/devel/dotfiles
@@ -30,7 +30,7 @@ Include in ~~/.bashrc~:
 
 *** SSH
 
-Check if the path to dotfiles is in ~~/.ssh/config~:
+Check if the path to dotfiles is in =~/.ssh/config=:
 
 #+begin_src example
 Include ~/devel/dotfiles/ssh_config
