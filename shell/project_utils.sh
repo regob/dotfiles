@@ -167,3 +167,25 @@ function -git_status_summary {
 
     return 0
 }
+function -trim_trailing_whitespace {
+    local path="$1"
+    local pattern="$2"
+
+    if [[ -z "$path" ]]; then
+        echo "Usage: trim_trailing_whitespace <path> [pattern]"
+        return 1
+    fi
+
+    if [[ -z "$pattern" ]]; then
+        pattern="*"
+    fi
+
+    if [[ -d "$path" ]]; then
+        find "$path" -type f -name "$pattern" -exec sed -i 's/[\t ]*$//' {} +
+    elif [[ -f "$path" ]]; then
+        sed -i 's/[\t ]*$//' "$path"
+    else
+        echo "Error: '$path' is not a valid file or directory."
+        return 1
+    fi
+}
