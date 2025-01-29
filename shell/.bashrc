@@ -80,7 +80,7 @@ function check_command_exists {
     else
         _msg="${RED}$1${RESET} not found."
     fi
-    
+
     # only display message if not in silent mode
     [ "$2" == 0 ] || echo -e "$_msg"
     return "$_cmd_found"
@@ -99,7 +99,7 @@ fi
 
 if check_command_exists kubectl 0; then
     alias k="kubectl"
-    
+
     function kns {
         kubectl config set-context --current --namespace="$1"
     }

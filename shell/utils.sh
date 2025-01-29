@@ -81,7 +81,7 @@ function _safe_rm_file {
                     while IFS= read -r -d '' file; do
                         </dev/tty _safe_rm_file "$file"
                     done < <(find "$1" -type l,f,p -print0)
-                    
+
                     if [ -z "$(ls -A "$1")" ]; then
                         echo -e "Deleting empty directory $RED$1$RESET"
                     fi
@@ -136,7 +136,7 @@ function -remove_filename_spaces_recursively {
     fi
     find "$1" -depth -name '* *' \
 	    | while IFS= read -r f ; do {
-        mv -i "$f" "$(dirname "$f")/$(basename "$f"|tr ' ' _)" </dev/tty ; 
+        mv -i "$f" "$(dirname "$f")/$(basename "$f"|tr ' ' _)" </dev/tty ;
     } done
 }
 
@@ -184,7 +184,7 @@ function -factorize {
             _I=$(( _I + 1 ))
         fi
     done
-    
+
     if [ $_X -gt 1 ]; then
         factors+=("$_X")
     fi
@@ -197,7 +197,7 @@ function -extract_nested_tarball() {
     if [ -z "$1" ]; then
         return 1
     fi
-    
+
     echo "Extracting $(realpath "$1") ..."
     TOP_DIR=$(tar tf "$1" | cut -d '/' -f1 | sort -u)
     NUM_TOP_DIRS=$(echo "$TOP_DIR" | wc -l)
@@ -215,7 +215,7 @@ function -extract_nested_tarball() {
     # Find and extract nested archives
     pushd "$TOP_DIR" &>/dev/null
 
-    find . -type f \( -name "*.tar" -o -name "*.tar.gz" -o -name "*.tgz" \) -print0 | while IFS= read -r -d '' archive; do 
+    find . -type f \( -name "*.tar" -o -name "*.tar.gz" -o -name "*.tgz" \) -print0 | while IFS= read -r -d '' archive; do
         -extract_nested_tarball "$archive" "delete"
     done
     popd &>/dev/null

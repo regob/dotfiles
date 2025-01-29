@@ -36,20 +36,20 @@ function -git_sync_all_projects {
         pushd "${project_dir}" >/dev/null
 
         echo -e "${BLUE}Syncing $(realpath "$PWD")${RESET}"
-        
+
         # if no upstream just commit
         if ! git rev-parse --abbrev-ref --symbolic-full-name @{u} 1>/dev/null 2>&1; then
             echo -e "${VIOLET}No upstream configured ... only committing locally ... ${RESET}"
-            
+
             git add -A
-            if [ -z "$(git status --porcelain 2>&1)" ]; then 
+            if [ -z "$(git status --porcelain 2>&1)" ]; then
                 echo -e "${GREEN}No commit needed, no changes exist!${RESET}"
             elif git commit -m "changes from $(uname -n) on $(date)"; then
                 echo -e "${GREEN}Commit successful: $(git rev-parse @ | head -c 8)!${RESET}"
             else
                 echo -e "${RED}Commit failed!${RESET}"
             fi
-            
+
         else
             git-sync
         fi
@@ -102,12 +102,12 @@ function -git_status_summary {
 
     # Get the current branch name
     local branch=$(git branch --show-current)
-    
+
     if [ -z "$branch" ]; then
         echo -e "${RED}HEAD is detached, no branch info available!${RESET}"
     else
         echo -e "Current branch: ${BR_GREEN}${branch}${RESET}"
-        
+
         # if executed in one line, the return code would always be 0 due to the 'local' command
         local remote_branch
         remote_branch=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>&1)
@@ -116,11 +116,11 @@ function -git_status_summary {
         # show remote branch, and branch log diffs
         if [ "${remote_branch_exists}" -eq 0 ]; then
             echo -e "Remote branch: ${BR_GREEN}${remote_branch}${RESET}"
-            
+
             # fetch remote: e.g. git fetch origin main
             git fetch $(echo ${remote_branch} | sed 's/\// /') >/dev/null 2>&1
 
-            
+
             if [ $? -ne 0 ]; then
                 echo -e "${RED}Fetching ${remote_branch} unsuccessful!${RESET}"
             fi
@@ -140,7 +140,7 @@ function -git_status_summary {
             if [ -n "$unpulled" ]; then
                 echo -e "${GREEN}Unpulled commits:${RESET}"
                 echo "${unpulled}" | head -n ${PRINT_LIMIT}
-                
+
                 # print # of commits truncated
                 local total_unpulled=$(echo "${unpulled}" | wc -l)
                 if [ ${total_unpulled} -gt ${PRINT_LIMIT} ]; then
@@ -167,6 +167,7 @@ function -git_status_summary {
 
     return 0
 }
+
 function -trim_trailing_whitespace {
     local path="$1"
     local pattern="$2"

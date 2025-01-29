@@ -8,7 +8,7 @@ function -ps1_git {
     if ! git rev-parse --git-dir > /dev/null 2>&1; then
         return
     fi
-    
+
     local BRANCH=$(git branch --show-current 2>&1)
 
     # detached head - show commit hash
@@ -17,7 +17,7 @@ function -ps1_git {
     fi
 
     local n_stashes=$(git stash list 2>/dev/null | wc -l)
-    
+
     # if remote branch exists check unpulled/unpushed commits
     git rev-parse --abbrev-ref --symbolic-full-name @{u} 1>/dev/null 2>&1
     if [ "$?" -eq 0 ]; then
@@ -49,7 +49,7 @@ function -ps1_virtualenv_info {
         venv=''
     fi
 
-    # also put changeps1: False to ~/.condarc to remove ps1 
+    # also put changeps1: False to ~/.condarc to remove ps1
     conda_env=$(basename "$CONDA_PREFIX")
     # conda_env=$(conda env list | grep "\*" | tr -s " " | cut -f1 -d " ")
     if [[ -n "$venv" ]] && [[ -n "$conda_env" ]]; then
@@ -77,4 +77,4 @@ function -ps1_summary {
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 S=" "
-export PS1="${INL_VIOLET}["'$(-ps1_summary)'"${S}${INL_GOLD}\u@\h${INL_RESET}${S}${INL_VIOLET}\W${INL_RESET}${S}${INL_GRAY}"'$(-ps1_virtualenv_info)'"${INL_RESET}${S}"'$(-ps1_git)'"${INL_VIOLET}]>${INL_RESET} "    
+export PS1="${INL_VIOLET}["'$(-ps1_summary)'"${S}${INL_GOLD}\u@\h${INL_RESET}${S}${INL_VIOLET}\W${INL_RESET}${S}${INL_GRAY}"'$(-ps1_virtualenv_info)'"${INL_RESET}${S}"'$(-ps1_git)'"${INL_VIOLET}]>${INL_RESET} "
