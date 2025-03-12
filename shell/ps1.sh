@@ -77,4 +77,6 @@ function -ps1_summary {
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 S=" "
-export PS1="${INL_VIOLET}["'$(-ps1_summary)'"${S}${INL_GOLD}\u@\h${INL_RESET}${S}${INL_VIOLET}\W${INL_RESET}${S}${INL_GRAY}"'$(-ps1_virtualenv_info)'"${INL_RESET}${S}"'$(-ps1_git)'"${INL_VIOLET}]>${INL_RESET} "
+
+unset PS1
+PS1="${INL_VIOLET}["'$(-ps1_summary)'"${S}${INL_GOLD}\u@\h${INL_RESET}${S}${INL_VIOLET}\W${INL_RESET}${S}${INL_GRAY}"'$(-ps1_virtualenv_info)'"${INL_RESET}${S}"'$(-ps1_git)'"${INL_VIOLET}]>${INL_RESET} "
