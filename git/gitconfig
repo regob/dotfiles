@@ -52,7 +52,10 @@
   cmd = emacs -q -nw --eval \"(ediff-files \\\"$LOCAL\\\" \\\"$REMOTE\\\")\"
 [difftool "ediffclient"]
   cmd = emacsclient --eval \"(ediff-files \\\"$LOCAL\\\" \\\"$REMOTE\\\")\"
+# ipynb diff/output stripping
 [filter "nbstripout"]
-  clean = nbstripout
+  clean = nbstripout --extra-keys \"metadata.language_info metadata.kernelspec metadata.instance_type metadata.availableInstances cell.metadata.tags\"
   smudge = cat
   required = true
+[diff "ipynb"]
+  textconv = nbstripout -t --extra-keys \"metadata.language_info metadata.kernelspec metadata.instance_type metadata.availableInstances cell.metadata.tags\"
