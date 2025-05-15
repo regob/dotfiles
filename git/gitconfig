@@ -25,7 +25,7 @@
 	sort = version:refname
 [fetch]
 	prune = true
-	pruneTags = true
+	pruneTags = false
 	all = true
 [rerere]
 	enabled = true
