@@ -224,3 +224,15 @@ function -extract_nested_tarball() {
         rm "$1"
     fi
 }
+
+function -nbstripnuke() {
+    local ipynb_file="$1"
+
+    # Check if the file has the .ipynb extension
+    if [[ ! "$ipynb_file" =~ \.ipynb$ ]]; then
+        echo "Error: '$ipynb_file' does not have the .ipynb extension."
+        return 1
+    fi
+
+    nbstripout --extra-keys "metadata.language_info metadata.kernelspec metadata.instance_type metadata.availableInstances cell.metadata.tags" "${ipynb_file}"
+}
