@@ -160,7 +160,7 @@ function -winpath_to_wsl {
 }
 
 # release cached memory in wsl
-function -wsl_release_memory() {
+function -wsl_release_memory {
     sudo bash -c "sync; echo 3 > /proc/sys/vm/drop_caches"
 }
 
@@ -193,7 +193,7 @@ function -factorize {
 }
 
 # extraction of nested .tar.gz file
-function -extract_nested_tarball() {
+function -extract_nested_tarball {
     if [ -z "$1" ]; then
         return 1
     fi
@@ -235,4 +235,14 @@ function -nbstripnuke() {
     fi
 
     nbstripout --extra-keys "metadata.language_info metadata.kernelspec metadata.instance_type metadata.availableInstances cell.metadata.tags" "${ipynb_file}"
+}
+
+# Maintain curated list of history commands
+# https://esham.io/2025/05/shell-history
+function shs {
+    history -p '!!' >> ~/.bash_perm_hist
+}
+
+function hhs {
+    HISTFILE="$HOME"/.bash_perm_hist hstr
 }
