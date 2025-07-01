@@ -1,5 +1,4 @@
-.libPaths('~/R/practice_lib')
-
+options(max.print=1000)
 
 # hacks from https://github.com/emacs-ess/ESS/issues/1193
 options(pillar.subtle = FALSE)
