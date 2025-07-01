@@ -39,6 +39,8 @@
 	followTags = true
 [pull]
 	rebase = true
+[merge]
+	tool = emerge
 
 ########################################
 # Special tool settings
