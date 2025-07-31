@@ -1,0 +1,4 @@
+* Preferences
+- ~browser.tabs.insertAfterCurrent~: true
+- ~browser.urlbar.maxRichResults~: 20
+- ~dom.private-attribution.submission.enabled~: false
