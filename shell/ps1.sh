@@ -9,7 +9,7 @@ function -ps1_git {
         return
     fi
 
-    local BRANCH=$(git branch --show-current 2>&1)
+    local BRANCH=$(git branch --show-current 2>&1 | cut -c1-16)
 
     # detached head - show commit hash
     if [ -z "$BRANCH" ]; then
