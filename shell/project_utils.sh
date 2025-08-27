@@ -98,7 +98,11 @@ function -git_status_summary {
         return 1
     fi
 
-    echo -e "${BLUE}Checking $(realpath "$1")${RESET}"
+    local path=$(realpath "$1")
+    echo -e "${BLUE}Checking ${path}${RESET}"
+    local n_hyphens=$(echo -n "Checking ${path}" | wc -c)
+    local hyphens=$(printf '%*s' "$n_hyphens" | tr ' ' '-')
+    echo -e "${BLUE}${hyphens}${RESET}"
 
     # Get the current branch name
     local branch=$(git branch --show-current)
@@ -160,6 +164,37 @@ function -git_status_summary {
         echo "${git_status}"
     else
         echo -e "${GREEN}Status clear.${RESET}"
+    fi
+
+    if git show-ref --quiet --verify refs/heads/main; then
+        local main_branch=main
+    elif git show-ref --quiet --verify refs/heads/master; then
+        local main_branch=master
+    else
+        local main_branch=""
+    fi
+
+    if [[ -n "$main_branch" ]] && [[ "${branch}" != "${main_branch}" ]]; then
+        local main_upstream=$(git rev-parse --abbrev-ref ${main_branch}@{upstream} 2>/dev/null)
+
+        echo -e "${MAGENTA}Status on branch ${main_branch}${RESET}:"
+
+        # Check for unpulled commits
+        local unpulled=$(git log ${main_branch}..${main_upstream} --oneline 2>/dev/null)
+        local PRINT_LIMIT=10
+
+        if [ -n "$unpulled" ]; then
+            echo -e "${GREEN}Unpulled commits:${RESET}"
+            echo "${unpulled}" | head -n ${PRINT_LIMIT}
+
+            # print # of commits truncated
+            local total_unpulled=$(echo "${unpulled}" | wc -l)
+            if [ ${total_unpulled} -gt ${PRINT_LIMIT} ]; then
+                echo -e "${GREEN}... $((total_unpulled - PRINT_LIMIT)) more ...${RESET}"
+            fi
+        else
+            echo -e "${GREEN}No unpulled commits.${RESET}"
+        fi
     fi
 
     # Return to the original directory
