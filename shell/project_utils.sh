@@ -34,9 +34,20 @@ function -git_sync_all_projects {
 
     local total_failures=0
     for project_dir in "${SYNC_PROJECT_LIST[@]}"; do
-        pushd "${project_dir}" >/dev/null
 
         echo -e "${BLUE}Syncing $(realpath "$PWD")${RESET}"
+
+        if ! pushd "${project_dir}" >/dev/null 2>&1; then
+            printf 'Failure: Not a valid directory.\n\n'
+            ((total_failures++))
+            continue
+        fi
+
+        if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+            printf 'Failure: Not a git repository.\n\n'
+            ((total_failures++))
+            continue
+        fi
 
         # if no upstream just commit
         if ! git rev-parse --abbrev-ref --symbolic-full-name @{u} 1>/dev/null 2>&1; then
@@ -65,7 +76,8 @@ function -git_sync_all_projects {
     done
 
     if [[ "$total_failures" -ne 0 ]]; then
-        echo "Failed to sync ${total_failures} projects, please check manually."
+        local _msg="Failed to sync ${total_failures} projects, please check manually."
+        echo "$_msg" >&2
         return 1
     fi
     return 0
