@@ -71,12 +71,44 @@ INL_GOLD="\[\e[38;5;185m\]"
 ## Set up tools
 ########################################
 
+function _find_tool_version {
+    local cmd=$1
+    local version=""
+    local output=""
+    local flags=(--version)
+    local version_pattern='[0-9]+(\.[0-9]+)+'
+
+    # the command is assumed to exist
+    # ffmpeg prints everything to stderr
+    if [[ "$cmd" == "ffmpeg" ]]; then
+        version=$(ffmpeg 2>&1 | head -n1 | grep -Eo "$version_pattern")
+    else
+        for flag in "${flags[@]}"; do
+            output=$("$cmd" "$flag" 2>/dev/null)
+            # Extract first version-like pattern
+            version=$(echo "$output" | grep -Eo "$version_pattern" | head -n1)
+
+            if [[ -n $version ]]; then
+                break
+            fi
+        done
+    fi
+
+    if [[ -n "$version" ]]; then
+        echo "$version"
+    else
+        echo "<unknown>"
+    fi
+}
+
 function check_command_exists {
     # $1: command_name, $2 silent
     which "$1" >/dev/null 2>&1
     _cmd_found="$?"
     if [ "$_cmd_found" -eq 0 ]; then
-        _msg="${BR_GREEN}$1${RESET} found at $(which "$1")."
+        # hacky way to find out version
+        local version=$(_find_tool_version "$1")
+        _msg="${BR_GREEN}$1${RESET} found at $(which "$1") with version ${version}."
     else
         _msg="${RED}$1${RESET} not found."
     fi
@@ -115,17 +147,40 @@ if check_command_exists uv 0; then
 fi
 
 function -full_tooling_check {
+    echo "Editors:"
+    check_command_exists emacs
+
+    echo
+    echo "Python 🐍:"
     check_command_exists python
     check_command_exists python3
+    check_command_exists uv
+    check_command_exists ruff
+    check_command_exists conda
+
+    echo
+    echo "VC utilities:"
+    check_command_exists git
+    check_command_exists pre-commit
+    check_command_exists git-sync
+
+    echo
+    echo "CLI utilities:"
     check_command_exists fzf
     check_command_exists direnv
+    check_command_exists hstr
+    check_command_exists rg
+
+    echo
+    echo "Cloud software:"
     check_command_exists kubectl
     check_command_exists helm
-    check_command_exists hstr
-    check_command_exists parallel
-    check_command_exists rg
-    check_command_exists ag
-    check_command_exists uv
+    check_command_exists aws
+    check_command_exists az
+
+    echo
+    echo "Tools:"
+    check_command_exists ffmpeg
 }
 
 ########################################
