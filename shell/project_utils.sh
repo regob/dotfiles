@@ -22,16 +22,17 @@ function -git_auto_commit {
 function -git_sync_all_projects {
     if [ -z "${SYNC_PROJECT_LIST}" ]; then
         echo "No projects found in SYNC_PROJECT_LIST. Nothing to do."
-        return
+        return 1
     fi
 
     which git-sync >/dev/null 2>&1
     if [ "$?" -ne 0 ]; then
         echo "git-sync not found, please install using:"
         echo "git clone https://github.com/simonthum/git-sync"
-        return
+        return 1
     fi
 
+    local total_failures=0
     for project_dir in "${SYNC_PROJECT_LIST[@]}"; do
         pushd "${project_dir}" >/dev/null
 
@@ -51,13 +52,23 @@ function -git_sync_all_projects {
             fi
 
         else
-            git-sync
+            # force a commit (git-sync is reluctant to commit)
+            -git_auto_commit
+
+            if ! git-sync -n; then
+                ((total_failures++))
+            fi
         fi
 
         popd >/dev/null
         echo
     done
 
+    if [[ "$total_failures" -ne 0 ]]; then
+        echo "Failed to sync ${total_failures} projects, please check manually."
+        return 1
+    fi
+    return 0
 }
 
 # Prints the git status summary for all repos in PROJECT_LIST
